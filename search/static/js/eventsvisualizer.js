@@ -45,18 +45,67 @@ function renderMarkers(data)
 	for (var i=0; i<length; i++)
 	{
 		element = nodes[i];
-		eventPopup = "<b>" + element.tags['event:0:name'] + "</b>";
-		eventPopup += (element.tags['event:0:startdate'] != undefined)?"</br>Starts: " + element.tags['event:0:startdate']:"";
-		eventPopup += (element.tags['event:0:enddate'] != undefined)?"</br>Ends: " + element.tags['event:0:startdate']:"";
+		eventPopup = renderEventPopup(element.tags);
 		markers[i] = L.marker([element.lat, element.lon]).bindPopup(eventPopup);
-		// element = nodes[i];
-		// console.log(sprintf("Search: [%f,%f]", element.lat, element.lon));
-		// var marker = L.marker([element.lat, element.lon]).addTo(map);
-		// marker.bindPopup(element.tags['event:0:name']);
-		// console.log("Adding:" + element.tags['event:0:name']);
 	}
 	if (window['currentMarkers'] != undefined) { currentMarkers.clearLayers(); }
 	currentMarkers = L.layerGroup(markers).addTo(map);
+}
+
+function renderEventPopup(tags) {
+	// var length = tags.length;
+	// Only consider 0th event for now.
+
+	var tagPopupValue = "";
+	// for (var i=0; i<length; i++) {
+	var eventName = getTagValue(tags, getTagKey('name'));
+	tagPopupValue += (eventName)?sprintf("<b>%s</b><br/>", eventName):"";
+	var eventCat = getTagValue(tags, getTagKey('category'));
+	var eventSubCat = getTagValue(tags, getTagKey('subcategory'));
+	tagPopupValue += (eventCat && eventSubCat)?sprintf("Category: %s > %s<br/>", eventCat, eventSubCat):"";
+	var eventStartDate = getTagValue(tags, getTagKey('startdate'));
+	var eventEndDate = getTagValue(tags, getTagKey('enddate'));
+	tagPopupValue += (eventStartDate && eventEndDate)?sprintf("From: %s to %s<br/>", eventStartDate, eventEndDate):"";
+	var eventUrl = tags[getTagKey('url')];
+	if (eventUrl != undefined && eventUrl.charAt(0) != "h") eventUrl = "http://" + eventUrl;
+	tagPopupValue += (eventUrl)?sprintf("Url: <a href='%s' target='_blank'>%s</a><br/>", eventUrl, trimUrl(eventUrl)):"";
+	console.log(tagPopupValue);
+	var eventNumParticipants = getTagValue(tags, getTagKey('num_participants'));
+	tagPopupValue += (eventNumParticipants)?sprintf("Number of Participants: %s<br/>", eventNumParticipants):"";
+	var eventHowOften = getTagValue(tags, getTagKey('howoften'));
+	tagPopupValue += (eventHowOften)?sprintf("How often: %s<br/>", eventHowOften):"";
+	// }
+	return "<div class='popup-container'>" + tagPopupValue + "</div>";
+}
+
+function trimUrl(url) {
+	if (url != undefined && url.length > 40) {
+		return url.substr(0,40) + "...";
+	}
+	else {
+		return "";
+	}
+}
+
+function capitaliseFirstLetter(string)
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function getTagValue(tagList, tagKey) {
+	tagValue = tagList[tagKey];
+	if (tagValue) {
+		tagValue = capitaliseFirstLetter(tagValue);
+		return tagValue;
+	}
+	else {
+		return undefined;
+	}
+}
+
+function getTagKey(suffix, number) {
+	if(typeof(number)==='undefined') number = 0;
+	return sprintf('event:%d:%s', number, suffix);
 }
 
 function renderResults(data)
@@ -66,17 +115,18 @@ function renderResults(data)
 	var markers = [];
 	resultContainer = $("#searchResults")[0];
 	$(resultContainer).empty();
-	var resultTmpl = "<tr><td>%d</td><td>%s</td></tr>";
-	var result = "";
+	var resultTmpl = "<div class='search-result-item'>%s</div>";
+	var result = "<div class='search-result-header'>Search Results</div>";
 	for (var i=0; i<length; i++)
 	{
 		element = nodes[i];
-		result += sprintf(resultTmpl, i+1, element.tags['event:0:name']);
+		if (!element.tags['event:0:name']) continue;
+		result += sprintf(resultTmpl, element.tags['event:0:name']);
 	}
-	$(resultContainer).append("<table class='table table-bordered'>" + result + "</table>");
+	$(resultContainer).append(result);
 }
 
 map.on('moveend', fetchMarkers);
-map.on('click', function(e) { console.log(sprintf("[%f,%f]", e.latlng.lat, e.latlng.lng))});
+// map.on('click', function(e) { console.log(sprintf("[%f,%f]", e.latlng.lat, e.latlng.lng))});
 
 fetchMarkers();

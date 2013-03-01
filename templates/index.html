@@ -1,48 +1,40 @@
 <html>
   <head>
-  	<link rel="stylesheet" type="text/css" href="/static/css/leaflet.css"/>
-  	<link rel="stylesheet" type="text/css" href="/static/css/styles.css"/>
-  	<link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.css">
-  	<link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-responsive.css">
-  	<script type="text/javascript" src="/static/js/leaflet.js"></script>
-  	<script type="text/javascript" src="/static/js/jquery-1.9.1.min.js"></script>
-  	<script type="text/javascript" src="/static/js/sprintf-0.6.js"></script>
-  	<style type="text/css">
-  		#map { height: 500px; }
-  	</style>
+    <link rel="stylesheet" type="text/css" href="/static/css/leaflet.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/styles.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-responsive.css">
+    <script type="text/javascript" src="/static/js/leaflet.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/sprintf-0.6.js"></script>
   </head>
   <body>
-  	<div class="container">
-  		<h1>Events Visualizer</h1>
-	    <p>Search for your event:</p>
-	  	<div class="row">
-	  		<span class="span9">
-			  	<form id="searchForm" class="form-inline">
-			  		<label>Event name</label>
-			  		<input type="text" name="eventName"></input>
-		  			<label>Category</label>
-		  			<input type="text" name="eventCategory"></input>
+    <div class="container">
+      <h1>OpenEventMap</h1>
+      <p>Search for your event:</p>
+      <div class="row">
+        <span class="span12">
+          <form id="searchForm" class="form-inline">
+            <label>Event name</label>
+            <input type="text" name="eventName"></input>
+            <label>Category</label>
+            <input type="text" name="eventCategory"></input>
 
-		  			<!-- <label>Start Date</label>
-		  			<input type="text" name="eventStartDate"></input> -->
-		  			<button type="submit" class="btn">Search</button>
-			  	</form>
-			  </span>
-			  <span class="span3">
-			  	test
-			  </span>
-		  </div>
-		  <div class="row">
-		  	<span class="span12">
-	  			<div id="map"></div>
-	  		</span>
-	  	</div>
-	  	<div class="row">
-	  		<span class="span12">
-	  			<p><div id="searchResults"></p>
-	  			</div>
-	  		</span>
-	  	</div>
-	  </div> <!-- /.container -->
-  	<script type="text/javascript" src="/static/js/eventsvisualizer.js"></script>
+            <!-- <label>Start Date</label>
+            <input type="text" name="eventStartDate"></input> -->
+            <button type="submit" class="btn">Search</button>
+          </form>
+        </span>
+      </div>
+      <div class="row">
+        <span class="span3">
+          <div id="searchResults"></p>
+          </div>
+        </span>
+        <span class="span9">
+          <div id="map"></div>
+        </span>
+      </div>
+    </div> <!-- /.container -->
+    <script type="text/javascript" src="/static/js/eventsvisualizer.js"></script>
   </body>

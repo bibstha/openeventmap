@@ -1,0 +1,27 @@
+#map, #searchResults { height: 500px; }
+#searchResults {
+	overflow: auto;
+	overflow-x: hidden;
+	padding-right: 10px;
+}
+
+.search-result-item {
+	margin-bottom: 5px;
+	background: #F1F1F1;
+	padding: 5px 5px;
+}
+
+.search-result-header {
+	font-weight: bold;
+}
+
+.popup-container {
+	width: 301px;
+	overflow: auto;
+	overflow-x: visible;
+	/*white-space: nowrap;*/
+}
+
+input[name="eventName"] {
+	width:450px;
+}
