@@ -22,12 +22,13 @@ def searchapi(request):
 			return HttpResponse(json.dumps(errorOutput), content_type="application/json")
 
 	PRECISION = 7;
+	MUL_FACTOR = pow(10, PRECISION);
 	# https://trac.openstreetmap.org/browser/applications/utils/osmosis/trunk/src/org/openstreetmap/osmosis/core/util/FixedPrecisionCoordinateConvertor.java?rev=20552
 
-	latMin = int(Decimal(request.GET.get("s")) * pow(10, PRECISION))
-	latMax = int(Decimal(request.GET.get("n")) * pow(10, PRECISION))
-	lngMin = int(Decimal(request.GET.get("w")) * pow(10, PRECISION))
-	lngMax = int(Decimal(request.GET.get("e")) * pow(10, PRECISION))
+	latMin = int(Decimal(request.GET.get("s")) * MUL_FACTOR)
+	latMax = int(Decimal(request.GET.get("n")) * MUL_FACTOR)
+	lngMin = int(Decimal(request.GET.get("w")) * MUL_FACTOR)
+	lngMax = int(Decimal(request.GET.get("e")) * MUL_FACTOR)
 
 	query = Q(latitude__gt=latMin, latitude__lt=latMax, longitude__gt=lngMin, longitude__lt=lngMax);
 	if request.GET.get("name"):
@@ -37,8 +38,22 @@ def searchapi(request):
 
 	events = Event.objects.filter(query)
 
-	JSONSerializer = serializers.get_serializer("json")
-	jsonSerializer = JSONSerializer()
+	eventsOutput = {}
+	for event in events:
+		if event.event_type == "node":
+			if not eventsOutput.has_key(event.type_id):
+				eventsOutput[event.type_id] = {
+					'lat' : float(event.latitude) / MUL_FACTOR,
+					'lng' : float(event.longitude) / MUL_FACTOR,
+					'events' : {}
+				}
+			if not eventsOutput[event.type_id]['events'].has_key(event.id):
+				eventsOutput[event.type_id]['events'][event.id] = {
+					'name' : event.name
+				}
 
-	response_data = jsonSerializer.serialize(events)
-	return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+	# JSONSerializer = serializers.get_serializer("json")
+	# jsonSerializer = JSONSerializer()
+	# response_data = jsonSerializer.serialize(events)
+	return HttpResponse(json.dumps({'elements':eventsOutput}), content_type="application/json")

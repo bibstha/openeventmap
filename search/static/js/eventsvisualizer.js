@@ -24,17 +24,14 @@ function fetchMarkers(e) {
 	
 	// var marker = L.marker([48.1742, 11.5453]).addTo(map);
 	// marker.bindPopup("This is cool");
-	opQryTpml = '[out:json];node["event"="yes"]%s(%f,%f,%f,%f);out;';
-	var nameQuery = "";
-	if (eventName != "") { nameQuery = sprintf('["event:0:name"~"%s"]', eventName); }
-	nameQuery += (eventCategory != "")?sprintf('["event:0:category"~"%s"]', eventCategory):"";
-
-	$.getJSON('http://localhost/overpassapi/interpreter',
+	$.getJSON('http://localhost:8000/searchapi/',
 	{
-		'data':sprintf(opQryTpml, nameQuery, s, w, n, e)
+		'e':e, 'w':w, 'n':n, 's':s,
+		'name':eventName,
+		'category':eventCategory
 	})
 	.success(renderMarkers)
-	.success(renderResults);
+	// .success(renderResults);
 }
 
 function renderMarkers(data)
@@ -42,38 +39,39 @@ function renderMarkers(data)
 	nodes = data.elements;
 	var length = nodes.length;
 	var markers = [];
-	for (var i=0; i<length; i++)
-	{
-		element = nodes[i];
-		eventPopup = renderEventPopup(element.tags);
-		markers[i] = L.marker([element.lat, element.lon]).bindPopup(eventPopup);
+	for (var key in nodes) {
+		node = nodes[key];
+		eventPopup = renderEventPopup(node.events);
+		markers.push(L.marker([node.lat, node.lng]).bindPopup(eventPopup));
 	}
 	if (window['currentMarkers'] != undefined) { currentMarkers.clearLayers(); }
 	currentMarkers = L.layerGroup(markers).addTo(map);
 }
 
-function renderEventPopup(tags) {
-	// var length = tags.length;
-	// Only consider 0th event for now.
+function renderEventPopup(events) {
+	var length = events.length;
+	for (var key in events) {
+		event = events[key];
+		var tagPopupValue = "";
+		// for (var i=0; i<length; i++) {
+		var eventName = event.name;
+		tagPopupValue += (eventName)?sprintf("<b>%s</b><br/>", eventName):"";
+		console.log(tagPopupValue);
+		// var eventCat = getTagValue(tags, getTagKey('category'));
+		// var eventSubCat = getTagValue(tags, getTagKey('subcategory'));
+		// tagPopupValue += (eventCat && eventSubCat)?sprintf("Category: %s > %s<br/>", eventCat, eventSubCat):"";
+		// var eventStartDate = getTagValue(tags, getTagKey('startdate'));
+		// var eventEndDate = getTagValue(tags, getTagKey('enddate'));
+		// tagPopupValue += (eventStartDate && eventEndDate)?sprintf("From: %s to %s<br/>", eventStartDate, eventEndDate):"";
+		// var eventUrl = tags[getTagKey('url')];
+		// if (eventUrl != undefined && eventUrl.charAt(0) != "h") eventUrl = "http://" + eventUrl;
+		// tagPopupValue += (eventUrl)?sprintf("Url: <a href='%s' target='_blank'>%s</a><br/>", eventUrl, trimUrl(eventUrl)):"";
+		// var eventNumParticipants = getTagValue(tags, getTagKey('num_participants'));
+		// tagPopupValue += (eventNumParticipants)?sprintf("Number of Participants: %s<br/>", eventNumParticipants):"";
+		// var eventHowOften = getTagValue(tags, getTagKey('howoften'));
+		// tagPopupValue += (eventHowOften)?sprintf("How often: %s<br/>", eventHowOften):"";
 
-	var tagPopupValue = "";
-	// for (var i=0; i<length; i++) {
-	var eventName = getTagValue(tags, getTagKey('name'));
-	tagPopupValue += (eventName)?sprintf("<b>%s</b><br/>", eventName):"";
-	var eventCat = getTagValue(tags, getTagKey('category'));
-	var eventSubCat = getTagValue(tags, getTagKey('subcategory'));
-	tagPopupValue += (eventCat && eventSubCat)?sprintf("Category: %s > %s<br/>", eventCat, eventSubCat):"";
-	var eventStartDate = getTagValue(tags, getTagKey('startdate'));
-	var eventEndDate = getTagValue(tags, getTagKey('enddate'));
-	tagPopupValue += (eventStartDate && eventEndDate)?sprintf("From: %s to %s<br/>", eventStartDate, eventEndDate):"";
-	var eventUrl = tags[getTagKey('url')];
-	if (eventUrl != undefined && eventUrl.charAt(0) != "h") eventUrl = "http://" + eventUrl;
-	tagPopupValue += (eventUrl)?sprintf("Url: <a href='%s' target='_blank'>%s</a><br/>", eventUrl, trimUrl(eventUrl)):"";
-	var eventNumParticipants = getTagValue(tags, getTagKey('num_participants'));
-	tagPopupValue += (eventNumParticipants)?sprintf("Number of Participants: %s<br/>", eventNumParticipants):"";
-	var eventHowOften = getTagValue(tags, getTagKey('howoften'));
-	tagPopupValue += (eventHowOften)?sprintf("How often: %s<br/>", eventHowOften):"";
-	// }
+	}
 	return "<div class='popup-container'>" + tagPopupValue + "</div>";
 }
 
