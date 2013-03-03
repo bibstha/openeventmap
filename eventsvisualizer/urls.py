@@ -6,6 +6,7 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
 	url(r'^$', 'search.views.index'),
+	url(r'^searchapi/$', 'search.views.searchapi'),
     # Examples:
     # url(r'^$', 'eventsvisualizer.views.home', name='home'),
     # url(r'^eventsvisualizer/', include('eventsvisualizer.foo.urls')),

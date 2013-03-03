@@ -69,7 +69,6 @@ function renderEventPopup(tags) {
 	var eventUrl = tags[getTagKey('url')];
 	if (eventUrl != undefined && eventUrl.charAt(0) != "h") eventUrl = "http://" + eventUrl;
 	tagPopupValue += (eventUrl)?sprintf("Url: <a href='%s' target='_blank'>%s</a><br/>", eventUrl, trimUrl(eventUrl)):"";
-	console.log(tagPopupValue);
 	var eventNumParticipants = getTagValue(tags, getTagKey('num_participants'));
 	tagPopupValue += (eventNumParticipants)?sprintf("Number of Participants: %s<br/>", eventNumParticipants):"";
 	var eventHowOften = getTagValue(tags, getTagKey('howoften'));
@@ -110,23 +109,93 @@ function getTagKey(suffix, number) {
 
 function renderResults(data)
 {
-	odes = data.elements;
-	var length = nodes.length;
-	var markers = [];
+	var nodes = data.elements;
+	var nodeCategories = getNodeCategories(nodes);
 	resultContainer = $("#searchResults")[0];
 	$(resultContainer).empty();
-	var resultTmpl = "<div class='search-result-item'>%s</div>";
-	var result = "<div class='search-result-header'>Search Results</div>";
-	for (var i=0; i<length; i++)
-	{
-		element = nodes[i];
-		if (!element.tags['event:0:name']) continue;
-		result += sprintf(resultTmpl, element.tags['event:0:name']);
-	}
-	$(resultContainer).append(result);
+	$(resultContainer).append(renderNodeCategories(nodeCategories));
+	// var length = nodes.length;
+	// var markers = [];
+	// resultContainer = $("#searchResults")[0];
+	// $(resultContainer).empty();
+	// var resultTmpl = "<div class='search-result-item'>%s</div>";
+	// var result = "<div class='search-result-header'>Search Results</div>";
+	// for (var i=0; i<length; i++)
+	// {
+	// 	element = nodes[i];
+	// 	if (!element.tags['event:0:name']) continue;
+	// 	result += sprintf(resultTmpl, element.tags['event:0:name']);
+	// }
+	// $(resultContainer).append(result);
 }
 
 map.on('moveend', fetchMarkers);
 // map.on('click', function(e) { console.log(sprintf("[%f,%f]", e.latlng.lat, e.latlng.lng))});
 
 fetchMarkers();
+
+/**
+ * Model functions
+ * 
+ * Changes structure of the data or returns modified data structures
+ */
+
+/**
+ * Returns categories
+ */
+function getNodeCategories(nodeList) {
+	var length = nodeList.length;
+	var category = new Array();
+	var expectedCategories = ['social', 'sport', 'accident', 'concert', 'conference', 'construction', 'educational', 'exhibition', 'natural',
+		'political', 'traffic', 'other'];
+	for (var i=0; i<expectedCategories.length; i++) {
+		category[expectedCategories[i]] = new Array();
+	}
+	for (var i=0; i<length; i++) {
+		var node = nodeList[i];
+		var nodeTag = getTagValue(node.tags, getTagKey('category'));
+		if (nodeTag) {
+			if (expectedCategories.indexOf(nodeTag.toLowerCase()) != -1) {
+
+				category[nodeTag.toLowerCase()].push(node);
+			}
+			else {
+				category['other'].push(node);
+			}
+		}
+	}
+	// console.log(category);
+	return category;
+}
+
+
+/********
+ View Functions that renders a particular piece of object
+ ********/
+
+/**
+ * Renders a list of Nodes inside Categories
+ */
+function renderNodeCategories(nodeCategories) {
+	console.log(nodeCategories);
+	var result = "";
+	for (var key in nodeCategories) {
+		console.log(key);
+		var category = nodeCategories[key];
+		if (category.length != 0) {
+			var categoryResult = "<b>" + capitaliseFirstLetter(key) + " events</b><br/>";
+			categoryResult += renderCategory(category);
+			result += "<div class='node-category'>" + categoryResult + "</div>";
+		}
+	}
+	return result;
+}
+
+function renderCategory(category) {
+	var len = category.length;
+	var result = "";
+	for (var i=0; i<len; i++) {
+		result += "<div>" + capitaliseFirstLetter(category[i].tags[getTagKey("name")]) + "</div>";
+	}
+	return result;
+}
