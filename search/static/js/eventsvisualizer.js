@@ -37,7 +37,7 @@ function fetchMarkers(e) {
 		'enddate':eventEndDate,
 	})
 	.success(renderMarkers)
-	// .success(renderResults);
+	.success(renderResults);
 }
 
 function renderMarkers(data)
@@ -119,6 +119,7 @@ function renderResults(data)
 	resultContainer = $("#searchResults")[0];
 	$(resultContainer).empty();
 	$(resultContainer).append(renderNodeCategories(nodeCategories));
+	$(".collapse").collapse();
 	// var length = nodes.length;
 	// var markers = [];
 	// resultContainer = $("#searchResults")[0];
@@ -139,6 +140,7 @@ map.on('moveend', fetchMarkers);
 
 fetchMarkers();
 
+
 /**
  * Model functions
  * 
@@ -148,30 +150,29 @@ fetchMarkers();
 /**
  * Returns categories
  */
-function getNodeCategories(nodeList) {
-	var length = nodeList.length;
-	var category = new Array();
+function getNodeCategories(nodes) {
+	var length = nodes.length;
+	var categories = new Array();
 	var expectedCategories = ['social', 'sport', 'accident', 'concert', 'conference', 'construction', 'educational', 'exhibition', 'natural',
 		'political', 'traffic', 'other'];
 	for (var i=0; i<expectedCategories.length; i++) {
-		category[expectedCategories[i]] = new Array();
+		categories[expectedCategories[i]] = new Array();
 	}
-	for (var i in nodeList) {
-		var node = nodeList[i];
-		console.log(node);
-		var nodeTag = getTagValue(node.tags, getTagKey('category'));
-		if (nodeTag) {
-			if (expectedCategories.indexOf(nodeTag.toLowerCase()) != -1) {
-
-				category[nodeTag.toLowerCase()].push(node);
+	for (var i in nodes) {
+		var node = nodes[i];
+		// console.log("Events", node.events);
+		for (var eventkey in node.events) {
+			var eventObj = node.events[eventkey];
+			var category = eventObj.category.toLowerCase();
+			if (category != undefined && category.length > 0 && expectedCategories.indexOf(category) != -1) {
+				categories[category].push(eventObj);
 			}
 			else {
-				category['other'].push(node);
+				categories['other'].push(eventObj);	
 			}
 		}
 	}
-	// console.log(category);
-	return category;
+	return categories;
 }
 
 
@@ -183,25 +184,29 @@ function getNodeCategories(nodeList) {
  * Renders a list of Nodes inside Categories
  */
 function renderNodeCategories(nodeCategories) {
-	console.log(nodeCategories);
+	console.log("asdf", nodeCategories);
 	var result = "";
 	for (var key in nodeCategories) {
-		console.log(key);
+		// console.log(key);
 		var category = nodeCategories[key];
+		var categoryRendered = "";
 		if (category.length != 0) {
-			var categoryResult = "<b>" + capitaliseFirstLetter(key) + " events</b><br/>";
-			categoryResult += renderCategory(category);
-			result += "<div class='node-category'>" + categoryResult + "</div>";
+			var categoryResult = sprintf('<div class="accordion-heading">' + 
+				'<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse-%s">' +
+				"%s events</a></div>", key, capitaliseFirstLetter(key));
+			categoryResult += renderCategory(category, key);
+			result += '<div class="accordion-group">' + categoryResult + "</div>";
 		}
 	}
-	return result;
+	return '<div class="accordion" id="accordion2">' + result + '</div>';
 }
 
-function renderCategory(category) {
+function renderCategory(category, id) {
 	var len = category.length;
 	var result = "";
 	for (var i=0; i<len; i++) {
-		result += "<div>" + capitaliseFirstLetter(category[i].tags[getTagKey("name")]) + "</div>";
+		result += "<li>" + capitaliseFirstLetter(category[i].name.toLowerCase()) + "</li>";
 	}
-	return result;
+	return sprintf('<div id="collapse-%s" class="accordion-body collapse in mycollapse">' +
+    	'<div class="accordion-inner">%s</div></div>', id, "<ul>" + result + "</ul>");
 }

@@ -27,5 +27,9 @@ input[name="eventName"] {
 }
 
 .node-category {
-	
+
+}
+
+.accordion-group .collapse.in.mycollapse {
+	height: 0px;
 }
