@@ -24,7 +24,7 @@ function fetchMarkers(e) {
 	
 	// var marker = L.marker([48.1742, 11.5453]).addTo(map);
 	// marker.bindPopup("This is cool");
-	$.getJSON('http://localhost:8000/searchapi/',
+	$.getJSON('/searchapi/',
 	{
 		'e':e, 'w':w, 'n':n, 's':s,
 		'name':eventName,
@@ -56,13 +56,14 @@ function renderEventPopup(events) {
 		// for (var i=0; i<length; i++) {
 		var eventName = event.name;
 		tagPopupValue += (eventName)?sprintf("<b>%s</b><br/>", eventName):"";
-		console.log(tagPopupValue);
-		// var eventCat = getTagValue(tags, getTagKey('category'));
-		// var eventSubCat = getTagValue(tags, getTagKey('subcategory'));
-		// tagPopupValue += (eventCat && eventSubCat)?sprintf("Category: %s > %s<br/>", eventCat, eventSubCat):"";
-		// var eventStartDate = getTagValue(tags, getTagKey('startdate'));
-		// var eventEndDate = getTagValue(tags, getTagKey('enddate'));
-		// tagPopupValue += (eventStartDate && eventEndDate)?sprintf("From: %s to %s<br/>", eventStartDate, eventEndDate):"";
+		// console.log(tagPopupValue);
+		var eventCat = event.category;
+		// console.log("EventCat", eventCat);
+		var eventSubCat = event.subcategory;
+		tagPopupValue += (eventCat && eventSubCat)?sprintf("Category: %s > %s<br/>", eventCat, eventSubCat):"";
+		var eventStartDate = event.startdate;
+		var eventEndDate = event.enddate;
+		tagPopupValue += (eventStartDate && eventEndDate)?sprintf("From: %s to %s<br/>", eventStartDate, eventEndDate):"";
 		// var eventUrl = tags[getTagKey('url')];
 		// if (eventUrl != undefined && eventUrl.charAt(0) != "h") eventUrl = "http://" + eventUrl;
 		// tagPopupValue += (eventUrl)?sprintf("Url: <a href='%s' target='_blank'>%s</a><br/>", eventUrl, trimUrl(eventUrl)):"";
@@ -149,8 +150,9 @@ function getNodeCategories(nodeList) {
 	for (var i=0; i<expectedCategories.length; i++) {
 		category[expectedCategories[i]] = new Array();
 	}
-	for (var i=0; i<length; i++) {
+	for (var i in nodeList) {
 		var node = nodeList[i];
+		console.log(node);
 		var nodeTag = getTagValue(node.tags, getTagKey('category'));
 		if (nodeTag) {
 			if (expectedCategories.indexOf(nodeTag.toLowerCase()) != -1) {

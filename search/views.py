@@ -34,7 +34,7 @@ def searchapi(request):
 	if request.GET.get("name"):
 		query = query & Q(name__icontains=request.GET.get("name"))
 	if request.GET.get("category"):
-		query = query & Q(name__icontains=request.GET.get("category"))
+		query = query & Q(category__icontains=request.GET.get("category"))
 
 	events = Event.objects.filter(query)
 
@@ -49,11 +49,11 @@ def searchapi(request):
 				}
 			if not eventsOutput[event.type_id]['events'].has_key(event.id):
 				eventsOutput[event.type_id]['events'][event.id] = {
-					'name' : event.name
+					'name' : event.name,
+					'category' : event.category.capitalize(),
+					'subcategory' : event.subcategory.capitalize(),
+					# 'startdate' : event.startdate,
+					# 'enddate' : event.enddate,
 				}
 
-
-	# JSONSerializer = serializers.get_serializer("json")
-	# jsonSerializer = JSONSerializer()
-	# response_data = jsonSerializer.serialize(events)
 	return HttpResponse(json.dumps({'elements':eventsOutput}), content_type="application/json")
