@@ -1,0 +1,10 @@
+Django==1.4.1
+South==0.7.6
+#django-compositekey==0.1-alpha
+django-compositekey
+lxml==3.0alpha2
+psycopg2==2.4.6
+python-dateutil==2.1
+requests==0.14.0
+six==1.2.0
+wsgiref==0.1.2
