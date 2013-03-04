@@ -5,6 +5,7 @@ from search.models import *
 from decimal import Decimal
 from django.core import serializers
 from django.db.models import Q
+from datetime import datetime
 
 import json
 
@@ -35,6 +36,10 @@ def searchapi(request):
 		query = query & Q(name__icontains=request.GET.get("name"))
 	if request.GET.get("category"):
 		query = query & Q(category__icontains=request.GET.get("category"))
+	if request.GET.get("startdate"):
+		query = query & Q(startdate__gte=datetime.strptime(request.GET.get("startdate"),"%d/%m/%Y"))
+	if request.GET.get("enddate"):
+		query = query & Q(startdate__lte=datetime.strptime(request.GET.get("enddate"),"%d/%m/%Y"))
 
 	events = Event.objects.filter(query)
 
@@ -52,8 +57,20 @@ def searchapi(request):
 					'name' : event.name,
 					'category' : event.category.capitalize(),
 					'subcategory' : event.subcategory.capitalize(),
-					# 'startdate' : event.startdate,
-					# 'enddate' : event.enddate,
+					'url' : event.url,
+					'num_participants' : event.num_participants,
+					'howoften' : event.howoften,
 				}
+				if event.startdate:
+					if event.startdate.strftime("%H:%M") != "00:00":
+						eventsOutput[event.type_id]['events'][event.id]['startdate'] = event.startdate.strftime("%d/%m/%Y %H:%M")
+					else:
+						eventsOutput[event.type_id]['events'][event.id]['startdate'] = event.startdate.strftime("%d/%m/%Y")
+
+				if event.enddate:
+					if event.enddate.strftime("%H:%M") != "00:00":
+						eventsOutput[event.type_id]['events'][event.id]['enddate'] = event.enddate.strftime("%d/%m/%Y %H:%M")
+					else:
+						eventsOutput[event.type_id]['events'][event.id]['enddate'] = event.enddate.strftime("%d/%m/%Y")				
 
 	return HttpResponse(json.dumps({'elements':eventsOutput}), content_type="application/json")

@@ -38,6 +38,12 @@ class Command(BaseCommand):
 						events[eventId].enddate = self.parseDate(nodeTag.v)
 					elif eventTag == "related_items":
 						events[eventId].related_items = nodeTag.v
+					elif eventTag == "url":
+						events[eventId].url = nodeTag.v
+					elif eventTag == "num_participants":
+						events[eventId].num_participants = nodeTag.v
+					elif eventTag == "howoften":
+						events[eventId].howoften = nodeTag.v
 				except ValueError:
 					print "Exception occured:", type(nodeTag.v), eventTag, ":", self.parseDate(nodeTag.v)
 

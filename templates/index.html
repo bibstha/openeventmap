@@ -4,9 +4,11 @@
     <link rel="stylesheet" type="text/css" href="/static/css/styles.css"/>
     <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-responsive.css">
+    <link rel="stylesheet" type="text/css" href="/static/datepicker/css/datepicker.css">
     <script type="text/javascript" src="/static/js/leaflet.js"></script>
     <script type="text/javascript" src="/static/js/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="/static/js/sprintf-0.6.js"></script>
+    <script type="text/javascript" src="/static/datepicker/js/bootstrap-datepicker.js"></script>
   </head>
   <body>
     <div class="container">
@@ -19,10 +21,16 @@
             <input type="text" name="eventName"></input>
             <label>Category</label>
             <input type="text" name="eventCategory"></input>
-
+            <br/>
+            <label>Start Date (dd/mm/YYYY)</label>
+            <input type="text" name="eventStartDate" class="datepicker" data-date-format="dd/mm/yyyy"></input>
+            <label>End Date (dd/mm/YYYY)</label>
+            <input type="text" name="eventEndDate" class="datepicker" data-date-format="dd/mm/yyyy"></input>
+            <br/>
             <!-- <label>Start Date</label>
             <input type="text" name="eventStartDate"></input> -->
             <button type="submit" class="btn">Search</button>
+            <button class="btn btn-danger" type="reset">Reset</button>
           </form>
         </span>
       </div>
@@ -37,4 +45,5 @@
       </div>
     </div> <!-- /.container -->
     <script type="text/javascript" src="/static/js/eventsvisualizer.js"></script>
+    <script type="text/javascript">$('.datepicker').datepicker()</script>
   </body>

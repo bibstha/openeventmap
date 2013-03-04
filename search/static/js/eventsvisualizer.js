@@ -7,10 +7,14 @@ maxZoom: 18
 
 eventName = "";
 eventCategory = "";
-$("form button").click(function(event) {
+eventStartDate = "";
+eventEndDate = "";
+$("form button[type=submit]").click(function(event) {
     event.preventDefault(); 
     eventName = $("input[name=eventName]").val();
     eventCategory = $("input[name=eventCategory]").val();
+    eventStartDate = $("input[name=eventStartDate]").val();
+    eventEndDate = $("input[name=eventEndDate]").val();
     fetchMarkers();
 });
 
@@ -28,7 +32,9 @@ function fetchMarkers(e) {
 	{
 		'e':e, 'w':w, 'n':n, 's':s,
 		'name':eventName,
-		'category':eventCategory
+		'category':eventCategory,
+		'startdate':eventStartDate,
+		'enddate':eventEndDate,
 	})
 	.success(renderMarkers)
 	// .success(renderResults);
@@ -64,13 +70,13 @@ function renderEventPopup(events) {
 		var eventStartDate = event.startdate;
 		var eventEndDate = event.enddate;
 		tagPopupValue += (eventStartDate && eventEndDate)?sprintf("From: %s to %s<br/>", eventStartDate, eventEndDate):"";
-		// var eventUrl = tags[getTagKey('url')];
-		// if (eventUrl != undefined && eventUrl.charAt(0) != "h") eventUrl = "http://" + eventUrl;
-		// tagPopupValue += (eventUrl)?sprintf("Url: <a href='%s' target='_blank'>%s</a><br/>", eventUrl, trimUrl(eventUrl)):"";
-		// var eventNumParticipants = getTagValue(tags, getTagKey('num_participants'));
-		// tagPopupValue += (eventNumParticipants)?sprintf("Number of Participants: %s<br/>", eventNumParticipants):"";
-		// var eventHowOften = getTagValue(tags, getTagKey('howoften'));
-		// tagPopupValue += (eventHowOften)?sprintf("How often: %s<br/>", eventHowOften):"";
+		var eventUrl = event.url;
+		if (eventUrl != undefined && eventUrl.trim().length > 0 && eventUrl.charAt(0) != "h") eventUrl = "http://" + eventUrl;
+		tagPopupValue += (eventUrl)?sprintf("Url: <a href='%s' target='_blank'>%s</a><br/>", eventUrl, trimUrl(eventUrl)):"";
+		var eventNumParticipants = event.num_participants;
+		tagPopupValue += (eventNumParticipants)?sprintf("Number of Participants: %s<br/>", eventNumParticipants):"";
+		var eventHowOften = event.howoften;
+		tagPopupValue += (eventHowOften)?sprintf("How often: %s<br/>", eventHowOften):"";
 
 	}
 	return "<div class='popup-container'>" + tagPopupValue + "</div>";
