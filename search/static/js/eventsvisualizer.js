@@ -1,21 +1,23 @@
 // By default always Munich map
 var map = L.map('map').setView([48.1742, 11.5453], 13);
+var currentMarkers; // MapLayer to store markers
+var currentRelElems; // Highlight Objects
 L.tileLayer('http://{s}.tile.cloudmade.com/8afbe1354ec0452da96ac774a8dc4403/1/256/{z}/{x}/{y}.png', {
 attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
 maxZoom: 18
 }).addTo(map);
 
-eventName = "";
+eventName = "Unfall4";
 eventCategory = "";
 eventStartDate = "";
 eventEndDate = "";
 $("form button[type=submit]").click(function(event) {
-    event.preventDefault(); 
-    eventName = $("input[name=eventName]").val();
-    eventCategory = $("input[name=eventCategory]").val();
-    eventStartDate = $("input[name=eventStartDate]").val();
-    eventEndDate = $("input[name=eventEndDate]").val();
-    fetchMarkers();
+	event.preventDefault(); 
+	eventName = $("input[name=eventName]").val();
+	eventCategory = $("input[name=eventCategory]").val();
+	eventStartDate = $("input[name=eventStartDate]").val();
+	eventEndDate = $("input[name=eventEndDate]").val();
+	fetchMarkers();
 });
 
 function fetchMarkers(e) {
@@ -42,15 +44,20 @@ function fetchMarkers(e) {
 
 function renderMarkers(data)
 {
-	nodes = data.elements;
+	var nodes = data.elements;
 	var length = nodes.length;
 	var markers = [];
 	for (var key in nodes) {
-		node = nodes[key];
-		eventPopup = renderEventPopup(node.events);
-		markers.push(L.marker([node.lat, node.lng]).bindPopup(eventPopup));
+		var node = nodes[key];
+		var eventPopup = renderEventPopup(node.events);
+		var marker = L.marker([node.lat, node.lng]).bindPopup(eventPopup);
+		marker.on('mouseover', onMarkerMouseOver);
+		marker.on('mouseout', onMarkerMouseOut);
+		marker.current_node = node;
+
+		markers.push(marker);
 	}
-	if (window['currentMarkers'] != undefined) { currentMarkers.clearLayers(); }
+	if (currentMarkers != undefined) { currentMarkers.clearLayers(); }
 	currentMarkers = L.layerGroup(markers).addTo(map);
 }
 
@@ -93,7 +100,7 @@ function trimUrl(url) {
 
 function capitaliseFirstLetter(string)
 {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 function getTagValue(tagList, tagKey) {
@@ -120,19 +127,6 @@ function renderResults(data)
 	$(resultContainer).empty();
 	$(resultContainer).append(renderNodeCategories(nodeCategories));
 	$(".collapse").collapse();
-	// var length = nodes.length;
-	// var markers = [];
-	// resultContainer = $("#searchResults")[0];
-	// $(resultContainer).empty();
-	// var resultTmpl = "<div class='search-result-item'>%s</div>";
-	// var result = "<div class='search-result-header'>Search Results</div>";
-	// for (var i=0; i<length; i++)
-	// {
-	// 	element = nodes[i];
-	// 	if (!element.tags['event:0:name']) continue;
-	// 	result += sprintf(resultTmpl, element.tags['event:0:name']);
-	// }
-	// $(resultContainer).append(result);
 }
 
 map.on('moveend', fetchMarkers);
@@ -208,5 +202,62 @@ function renderCategory(category, id) {
 		result += "<li>" + capitaliseFirstLetter(category[i].name.toLowerCase()) + "</li>";
 	}
 	return sprintf('<div id="collapse-%s" class="accordion-body collapse in mycollapse">' +
-    	'<div class="accordion-inner">%s</div></div>', id, "<ul>" + result + "</ul>");
+		'<div class="accordion-inner">%s</div></div>', id, "<ul>" + result + "</ul>");
 }
+
+function onMarkerMouseOver(data) {
+	var events = data.target.current_node.events;
+	var nodeTmplate = "node(%s);out;";
+	var wayTemplate = "(way(%s);>;);out;";
+	var queryStr = "";
+	for (var eventKey in events) {
+		var anEvent = events[eventKey];
+		for (var itemKey in anEvent.related_items) {
+			var relatedItem = anEvent.related_items[itemKey];
+			if (relatedItem[0] == 'way') {
+				queryStr += sprintf(wayTemplate, relatedItem[1]);
+			}
+			else if (relatedItem[0] == 'node') {
+				queryStr += sprintf(wayTemplate, relatedItem[1]);
+			}
+		}
+	}
+	var url = 'http://www.overpass-api.de/api/interpreter?data=' + queryStr;
+	$.get(url, renderRelatedItems);	
+	// grab information on related items
+	// render them on the marker
+}
+
+function onMarkerMouseOut(data) {
+	currentRelElems.clearLayers();
+}
+
+function renderRelatedItems(data) {
+	if (currentRelElems != undefined) {
+		currentRelElems.clearLayers();
+	}
+	var geojsonMarkerOptions = {
+		radius: 16,
+		fillColor: "#ff7800",
+		color: "#000",
+		weight: 1,
+		opacity: 1,
+		fillOpacity: 0.8
+	};
+	var decor = {
+		pointToLayer: function (feature, latlng) {
+    		return L.circleMarker(latlng, geojsonMarkerOptions);
+		},
+		style: function(feature) {
+			return {color: "#ff0000"};
+		}
+	};
+	var geoJsonData = osm2geo(data);
+	// console.log("XML", data);
+	// console.log("JSON", b);
+	currentRelElems = L.layerGroup([L.geoJson(geoJsonData, decor)]).addTo(map);
+}
+
+// var url = 'http://www.overpass-api.de/api/interpreter?data=(way(116767683);>;);out;(way(4060419);>;);out;';
+// var url = 'http://www.overpass-api.de/api/interpreter?data=(way(116767683);>;);out;node(269698991);out;';
+// $.get(url, myFunc);

@@ -60,6 +60,8 @@ def searchapi(request):
 					'url' : event.url,
 					'num_participants' : event.num_participants,
 					'howoften' : event.howoften,
+					'related_items' : map(lambda x:x.split(":"), event.related_items.lower().split(", ")) if
+						event.related_items.strip() != "" else "",
 				}
 				if event.startdate:
 					if event.startdate.strftime("%H:%M") != "00:00":
@@ -71,6 +73,10 @@ def searchapi(request):
 					if event.enddate.strftime("%H:%M") != "00:00":
 						eventsOutput[event.type_id]['events'][event.id]['enddate'] = event.enddate.strftime("%d/%m/%Y %H:%M")
 					else:
-						eventsOutput[event.type_id]['events'][event.id]['enddate'] = event.enddate.strftime("%d/%m/%Y")				
+						eventsOutput[event.type_id]['events'][event.id]['enddate'] = event.enddate.strftime("%d/%m/%Y")
+
+				
+				
+
 
 	return HttpResponse(json.dumps({'elements':eventsOutput}), content_type="application/json")
