@@ -1,16 +1,11 @@
 // By default always Munich map
-var map = L.map('map').setView([48.1742, 11.5453], 13);
+var map;
 var currentMarkers; // MapLayer to store markers
 var currentRelElems; // Highlight Objects
-L.tileLayer('http://{s}.tile.cloudmade.com/8afbe1354ec0452da96ac774a8dc4403/1/256/{z}/{x}/{y}.png', {
-attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
-maxZoom: 18
-}).addTo(map);
-
-eventName = "Unfall4";
-eventCategory = "";
-eventStartDate = "";
-eventEndDate = "";
+var eventName = "";
+var eventCategory = "";
+var eventStartDate = "";
+var eventEndDate = "";
 $("form button[type=submit]").click(function(event) {
 	event.preventDefault(); 
 	eventName = $("input[name=eventName]").val();
@@ -20,16 +15,40 @@ $("form button[type=submit]").click(function(event) {
 	fetchMarkers();
 });
 
+function initialize() {
+	// Check if we have previously stored map coordinates
+	var curMapView = $.cookie("mapView");
+	if (undefined != curMapView) {
+		curMapView = curMapView.split(":");
+		for (var i=0; i<curMapView.length; i++) {
+			curMapView[i] = parseFloat(curMapView[i]);
+		}
+	}
+	else {
+		// Default coordinates for Munich, [Lat, Lng, Zoom]
+		curMapView = [48.1742, 11.5453, 13];
+	}
+	map = L.map('map').setView([curMapView[0], curMapView[1]], curMapView[2]);
+	L.tileLayer('http://{s}.tile.cloudmade.com/8afbe1354ec0452da96ac774a8dc4403/1/256/{z}/{x}/{y}.png', 
+	{
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+		maxZoom: 18
+	}).addTo(map);
+}
+
 function fetchMarkers(e) {
 	// How to get the values
 	// zoom = map.getZoom()
-	n = map.getBounds().getNorthEast().lat;
-	e = map.getBounds().getNorthEast().lng;
-	s = map.getBounds().getSouthWest().lat;
-	w = map.getBounds().getSouthWest().lng;
+	var n = map.getBounds().getNorthEast().lat;
+	var e = map.getBounds().getNorthEast().lng;
+	var s = map.getBounds().getSouthWest().lat;
+	var w = map.getBounds().getSouthWest().lng;
+
+	var lng = (e+w)/2;
+	var lat = (n+s)/2;
+	var zoom = map.getZoom();
+	$.cookie("mapView", sprintf("%.4f:%.4f:%d", lat, lng, zoom));
 	
-	// var marker = L.marker([48.1742, 11.5453]).addTo(map);
-	// marker.bindPopup("This is cool");
 	$.getJSON('/searchapi/',
 	{
 		'e':e, 'w':w, 'n':n, 's':s,
@@ -129,11 +148,6 @@ function renderResults(data)
 	$(".collapse").collapse();
 }
 
-map.on('moveend', fetchMarkers);
-// map.on('click', function(e) { console.log(sprintf("[%f,%f]", e.latlng.lat, e.latlng.lng))});
-
-fetchMarkers();
-
 
 /**
  * Model functions
@@ -178,7 +192,6 @@ function getNodeCategories(nodes) {
  * Renders a list of Nodes inside Categories
  */
 function renderNodeCategories(nodeCategories) {
-	console.log("asdf", nodeCategories);
 	var result = "";
 	for (var key in nodeCategories) {
 		// console.log(key);
@@ -222,14 +235,18 @@ function onMarkerMouseOver(data) {
 			}
 		}
 	}
-	var url = 'http://www.overpass-api.de/api/interpreter?data=' + queryStr;
-	$.get(url, renderRelatedItems);	
+	if (queryStr.trim() != "") {
+		var url = 'http://www.overpass-api.de/api/interpreter?data=' + queryStr;
+		$.get(url, renderRelatedItems);	
+	}
 	// grab information on related items
 	// render them on the marker
 }
 
 function onMarkerMouseOut(data) {
-	currentRelElems.clearLayers();
+	if (currentRelElems != undefined) {
+		currentRelElems.clearLayers();
+	}
 }
 
 function renderRelatedItems(data) {
@@ -261,3 +278,11 @@ function renderRelatedItems(data) {
 // var url = 'http://www.overpass-api.de/api/interpreter?data=(way(116767683);>;);out;(way(4060419);>;);out;';
 // var url = 'http://www.overpass-api.de/api/interpreter?data=(way(116767683);>;);out;node(269698991);out;';
 // $.get(url, myFunc);
+
+function main() {
+	initialize();
+	map.on('moveend', fetchMarkers);
+	fetchMarkers();
+}
+
+main();
