@@ -2,12 +2,19 @@
 var map;
 var currentMarkers; // MapLayer to store markers
 var currentRelElems; // Highlight Objects
+var currentMapNodes; // All nodes currently in the map
 var eventName = "";
 var eventCategory = "";
 var eventStartDate = "";
 var eventEndDate = "";
+var eventMarkerHashMap = {};
 $("form button[type=submit]").click(function(event) {
 	event.preventDefault(); 
+	if (currentMarkers != undefined) {
+		currentMarkers.clearLayers();
+		currentMarkers = undefined;
+	}
+	currentMapNodes = undefined;
 	eventName = $("input[name=eventName]").val();
 	eventCategory = $("input[name=eventCategory]").val();
 	eventStartDate = $("input[name=eventStartDate]").val();
@@ -63,7 +70,21 @@ function fetchMarkers(e) {
 
 function renderMarkers(data)
 {
-	var nodes = data.elements;
+	var nodes = {};
+	if (currentMapNodes == undefined) {
+		currentMapNodes = data.elements;
+		nodes = currentMapNodes;
+	}
+	else {
+		// Append new nodes
+		for (var key in data.elements) {
+			if (currentMapNodes[key] == undefined) {
+				nodes[key] = data.elements[key]
+				currentMapNodes[key] = data.elements[key]
+			}
+		}
+	}
+	
 	var length = nodes.length;
 	var markers = [];
 	for (var key in nodes) {
@@ -73,24 +94,32 @@ function renderMarkers(data)
 		marker.on('mouseover', onMarkerMouseOver);
 		marker.on('mouseout', onMarkerMouseOut);
 		marker.current_node = node;
-
 		markers.push(marker);
+
+		for (var eventKey in node.events) {
+			eventMarkerHashMap[eventKey] = marker;
+		}
 	}
-	if (currentMarkers != undefined) { currentMarkers.clearLayers(); }
-	currentMarkers = L.layerGroup(markers).addTo(map);
+	if (currentMarkers != undefined) { 
+		for (var key in markers) {
+			currentMarkers.addLayer(markers[key]);
+		}
+	}
+	else {
+		currentMarkers = L.layerGroup(markers).addTo(map);
+	}
 }
 
 function renderEventPopup(events) {
 	var length = events.length;
+	var tagPopUpWrapper = "";
 	for (var key in events) {
 		event = events[key];
 		var tagPopupValue = "";
 		// for (var i=0; i<length; i++) {
 		var eventName = event.name;
 		tagPopupValue += (eventName)?sprintf("<b>%s</b><br/>", eventName):"";
-		// console.log(tagPopupValue);
 		var eventCat = event.category;
-		// console.log("EventCat", eventCat);
 		var eventSubCat = event.subcategory;
 		tagPopupValue += (eventCat && eventSubCat)?sprintf("Category: %s > %s<br/>", eventCat, eventSubCat):"";
 		var eventStartDate = event.startdate;
@@ -103,9 +132,9 @@ function renderEventPopup(events) {
 		tagPopupValue += (eventNumParticipants)?sprintf("Number of Participants: %s<br/>", eventNumParticipants):"";
 		var eventHowOften = event.howoften;
 		tagPopupValue += (eventHowOften)?sprintf("How often: %s<br/>", eventHowOften):"";
-
+		tagPopUpWrapper += tagPopupValue + "<br/>";
 	}
-	return "<div class='popup-container'>" + tagPopupValue + "</div>";
+	return "<div class='popup-container'>" + tagPopUpWrapper + "</div>";
 }
 
 function trimUrl(url) {
@@ -146,6 +175,7 @@ function renderResults(data)
 	$(resultContainer).empty();
 	$(resultContainer).append(renderNodeCategories(nodeCategories));
 	$(".collapse").collapse();
+	associateEventWithMarker();
 }
 
 
@@ -168,7 +198,6 @@ function getNodeCategories(nodes) {
 	}
 	for (var i in nodes) {
 		var node = nodes[i];
-		// console.log("Events", node.events);
 		for (var eventkey in node.events) {
 			var eventObj = node.events[eventkey];
 			var category = eventObj.category.toLowerCase();
@@ -189,12 +218,11 @@ function getNodeCategories(nodes) {
  ********/
 
 /**
- * Renders a list of Nodes inside Categories
+ * For given nodeCategories, render them inside an accordian
  */
 function renderNodeCategories(nodeCategories) {
 	var result = "";
 	for (var key in nodeCategories) {
-		// console.log(key);
 		var category = nodeCategories[key];
 		var categoryRendered = "";
 		if (category.length != 0) {
@@ -208,18 +236,42 @@ function renderNodeCategories(nodeCategories) {
 	return '<div class="accordion" id="accordion2">' + result + '</div>';
 }
 
+/**
+ * Render one single nodeCategory and return the result as a string
+ */
 function renderCategory(category, id) {
 	var len = category.length;
 	var result = "";
 	for (var i=0; i<len; i++) {
-		result += "<li>" + capitaliseFirstLetter(category[i].name.toLowerCase()) + "</li>";
+		result += sprintf("<li class='event-list' data-eventid='%s'>%s<br/>" +
+			"<i class='icon-eye-open'/><a href='#' class='event-list-view'>View</a> " + 
+			"<i class='icon-list-alt'/><a href='#' class='event-list-relateditems'>Related Items</a></li>", 
+			category[i].id, capitaliseFirstLetter(category[i].name.toLowerCase()));
 	}
 	return sprintf('<div id="collapse-%s" class="accordion-body collapse in mycollapse">' +
 		'<div class="accordion-inner">%s</div></div>', id, "<ul>" + result + "</ul>");
 }
 
+/**
+ * When mouse is over a marker, load the relatedItems and render them
+ * on the map
+ */
 function onMarkerMouseOver(data) {
 	var events = data.target.current_node.events;
+	getRelatedItemsInOsmFormat(events);
+	// grab information on related items
+	// render them on the marker
+}
+
+/**
+ * Renders relatedItems in a separate layer.
+ *
+ * Uses overpass-api to load the data
+ *
+ * @param events - array of event object where
+ *  one single event is ['way/node', 'wayid/nodeid']
+ */
+function getRelatedItemsInOsmFormat(events) {
 	var nodeTmplate = "node(%s);out;";
 	var wayTemplate = "(way(%s);>;);out;";
 	var queryStr = "";
@@ -239,16 +291,20 @@ function onMarkerMouseOver(data) {
 		var url = 'http://www.overpass-api.de/api/interpreter?data=' + queryStr;
 		$.get(url, renderRelatedItems);	
 	}
-	// grab information on related items
-	// render them on the marker
 }
 
+/**
+ * When mouse is taken away from a marker, hide the relatedItems
+ */
 function onMarkerMouseOut(data) {
 	if (currentRelElems != undefined) {
 		currentRelElems.clearLayers();
 	}
 }
 
+/**
+ * For given relatedItems in data, render their structure in the leaflet map
+ */
 function renderRelatedItems(data) {
 	if (currentRelElems != undefined) {
 		currentRelElems.clearLayers();
@@ -273,13 +329,35 @@ function renderRelatedItems(data) {
 	currentRelElems = L.layerGroup([L.geoJson(geoJsonData, decor)]).addTo(map);
 }
 
-// var url = 'http://www.overpass-api.de/api/interpreter?data=(way(116767683);>;);out;(way(4060419);>;);out;';
-// var url = 'http://www.overpass-api.de/api/interpreter?data=(way(116767683);>;);out;node(269698991);out;';
-// $.get(url, myFunc);
-
+/**
+ * Changes the given div height to fit the whole browser screen
+ *
+ * Should be called when browser size is changed $(window).resize()
+ */
 function updateMapHeight() {
-	var mapContainer = $('#map');
+	var mapContainer = $('#result-row');
 	mapContainer.height($('body').height() - mapContainer.offset().top);
+}
+
+function associateEventWithMarker() {
+	$(".event-list-view").click(function(event) {
+		console.log("Outside");
+		var event_id = $(this).parent().data('eventid');
+		console.log(event_id);
+		if (event_id && eventMarkerHashMap[event_id]) {
+			console.log('Inside');
+			var marker = eventMarkerHashMap[event_id];
+			console.log(event_id);
+			marker.openPopup();
+		}
+	});
+
+	$(".event-list-relateditems").click(function(event) {
+		var event_id = $(this).parent().data('eventid');
+		if (event_id && eventMarkerHashMap[event_id]) {
+			getRelatedItemsInOsmFormat([eventMarkerHashMap[event_id].current_node.events[event_id]]);
+		}
+	});
 }
 
 function main() {

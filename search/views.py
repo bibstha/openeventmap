@@ -62,6 +62,7 @@ def searchapi(request):
 				}
 			if not eventsOutput[event.type_id]['events'].has_key(event.id):
 				eventsOutput[event.type_id]['events'][event.id] = {
+					'id' : event.id,
 					'name' : event.name,
 					'category' : event.category.capitalize(),
 					'subcategory' : event.subcategory.capitalize(),
