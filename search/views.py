@@ -84,8 +84,18 @@ def searchapi(request):
 					else:
 						eventsOutput[event.type_id]['events'][event.id]['enddate'] = event.enddate.strftime("%d/%m/%Y")
 
-				
-				
-
-
 	return HttpResponse(json.dumps({'elements':eventsOutput}), content_type="application/json")
+
+def feedback_post(request):
+	if request.POST.get("message"):
+		feedback = Feedback()
+		feedback.message = request.POST.get("message")
+		feedback.save()
+		return HttpResponse("saved")
+	else:
+		return HttpResponse("notsaved")
+	
+
+def feedbacks_list(request):
+	feedbacks = Feedback.objects.all()
+	return render_to_response('feedbacks_list.haml', {'feedbacks' : feedbacks}, context_instance=RequestContext(request))

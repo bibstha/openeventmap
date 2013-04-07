@@ -73,3 +73,7 @@ class Way(models.Model):
 	class Meta:
 		db_table = "current_ways"
 		managed = False
+
+class Feedback(models.Model):
+	message = models.TextField()
+	created_at = models.DateTimeField(auto_now_add = True)

@@ -1,0 +1,11 @@
+{% extends 'base.haml' %}
+{% block container %}
+%h2 All Feedbacks
+{% for feedback in feedbacks %}
+  %p 
+    Submitted on {{ feedback.created_at }}
+    %br
+    {{ feedback.message|linebreaksbr }}
+  %hr
+{% endfor %}
+{% endblock %}

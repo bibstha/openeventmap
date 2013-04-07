@@ -13,13 +13,43 @@
           %div.nav-collapse.collapse
             %ul.nav
               %li
-                %a{:href => "/"} Home
+                %a{:href => "/"} 
+                  %i.icon-home.icon-white
+                  Home
               %li
-                %a{:href => "/about-us"} About
+                %a{:href => "/about-us"}
+                  %i.icon-book.icon-white
+                  About
               %li
-                %a{:href => "/contact-us"} Contact Us
+                %a{:href => "/contact-us"}
+                  %i.icon-envelope.icon-white
+                  Contact Us
+              %li
+                %a.feedback{:href => "#feedbackModal", :data-toggle => "modal"}
+                  %i.icon-comment.icon-white
+                  Feedback
     .container-fluid
       {% block container %}{% endblock %}
+
+    #feedbackModal.modal.hide.fade{ :tabindex => "-1" }
+      {% csrf_token %}
+      .modal-header
+        %button.close{ :data-dismiss => "modal"} ×
+        %h3#myModalLabel Send us your feedback
+      .modal-body
+        %textarea.input-block-level{:rows => 5, :name => "feedback", :placeholder => "Type your message here."}
+      .modal-footer
+        %button.btn{ :data-dismiss => "modal"} Close
+        %button#feedback-save.btn.btn-primary Save changes
+
+    #feedbackThanksModal.modal.hide.fade{ :tabindex => "-1" }
+      .modal-header
+        %button.close{ :data-dismiss => "modal"} ×
+        %h3#myModalLabel Thankyou for your feedback
+      .modal-footer
+        %button.btn{ :data-dismiss => "modal"} Close
+
+
     %script{:type => "text/javascript", :src => "/static/js/jquery-1.9.1.min.js"}
     %script{:type => "text/javascript", :src => "/static/js/leaflet.js"}
     %script{:type => "text/javascript", :src => "/static/js/sprintf-0.6.js"}
@@ -28,6 +58,21 @@
     %script{:type => "text/javascript", :src => "/static/js/osm2geo.js"}
     %script{:type => "text/javascript", :src => "/static/js/jquery.cookie.js"}
     %script{:type => "text/javascript", :src => "/static/js/eventsvisualizer.js"}
-    %script{:type => "text/javascript"}
-      $('.datepicker').datepicker()
+    :javascript
+      $(document).ready(function() {
+        $('.datepicker').datepicker();
+        $('#feedback-save').click(function() {
+          $.post('/feedback/post', {
+            'message' : $('#feedbackModal textarea').val(),
+            'csrfmiddlewaretoken' : $.cookie('csrftoken'),
+          }, function() {
+            $('#feedbackModal textarea').val('');
+          });
+          $('#feedbackModal').modal('hide');
+          $('#feedbackThanksModal').modal('show');
+        });
+      });
+
+    
+
 

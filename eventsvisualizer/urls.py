@@ -9,6 +9,8 @@ urlpatterns = patterns('',
 	url(r'^about-us$', 'search.views.about_us'),
 	url(r'^contact-us$', 'search.views.contact_us'),
 	url(r'^searchapi/$', 'search.views.searchapi'),
+    url(r'^feedback/post$', 'search.views.feedback_post'),
+    url(r'^feedbacks/list$', 'search.views.feedbacks_list'),
     # Examples:
     # url(r'^$', 'eventsvisualizer.views.home', name='home'),
     # url(r'^eventsvisualizer/', include('eventsvisualizer.foo.urls')),
