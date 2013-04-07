@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+%html{:lang => "en"}
+  %head
+    %link{:rel => 'stylesheet', :type => 'text/css', :href => "/static/css/leaflet.css"}
+    %link{:rel => 'stylesheet', :type => 'text/css', :href => "/static/css/styles.css"}
+    %link{:rel => 'stylesheet', :type => 'text/css', :href => "/static/bootstrap/css/bootstrap_cosmo.css"}
+    %link{:rel => 'stylesheet', :type => 'text/css', :href => "/static/datepicker/css/datepicker.css"}
+  %body
+    .navbar
+      .navbar-inner
+        .container-fluid
+          %a.brand{:href => "/"} OpenEventMap
+          %div.nav-collapse.collapse
+            %ul.nav
+              %li
+                %a{:href => "/"} Home
+              %li
+                %a{:href => "/about-us"} About
+              %li
+                %a{:href => "/contact-us"} Contact Us
+    .container-fluid
+      {% block container %}{% endblock %}
+    %script{:type => "text/javascript", :src => "/static/js/jquery-1.9.1.min.js"}
+    %script{:type => "text/javascript", :src => "/static/js/leaflet.js"}
+    %script{:type => "text/javascript", :src => "/static/js/sprintf-0.6.js"}
+    %script{:type => "text/javascript", :src => "/static/bootstrap/js/bootstrap.min.js"}
+    %script{:type => "text/javascript", :src => "/static/datepicker/js/bootstrap-datepicker.js"}
+    %script{:type => "text/javascript", :src => "/static/js/osm2geo.js"}
+    %script{:type => "text/javascript", :src => "/static/js/jquery.cookie.js"}
+    %script{:type => "text/javascript", :src => "/static/js/eventsvisualizer.js"}
+    %script{:type => "text/javascript"}
+      $('.datepicker').datepicker()
+

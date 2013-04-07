@@ -1,8 +1,16 @@
+html, body {
+    height: 100%;
+}
+
+.fill { 
+    min-height: 100%;
+    height: 100%;
+}
+
 #map, #searchResults { height: 500px; }
 #searchResults {
 	overflow: auto;
 	overflow-x: hidden;
-	padding-right: 10px;
 }
 
 .search-result-item {
@@ -20,10 +28,6 @@
 	overflow: auto;
 	overflow-x: visible;
 	/*white-space: nowrap;*/
-}
-
-input[name="eventName"] {
-	width:450px;
 }
 
 .node-category {

@@ -6,6 +6,8 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
 	url(r'^$', 'search.views.index'),
+	url(r'^about-us$', 'search.views.about_us'),
+	url(r'^contact-us$', 'search.views.contact_us'),
 	url(r'^searchapi/$', 'search.views.searchapi'),
     # Examples:
     # url(r'^$', 'eventsvisualizer.views.home', name='home'),

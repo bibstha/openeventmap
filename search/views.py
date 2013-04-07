@@ -11,7 +11,15 @@ import json
 
 def index(request):
 	parameters = {}
-	return render_to_response('index.html', parameters, context_instance=RequestContext(request))
+	return render_to_response('index.haml', parameters, context_instance=RequestContext(request))
+
+def about_us(request):
+	parameters = {}
+	return render_to_response('about-us.haml', parameters, context_instance=RequestContext(request))
+
+def contact_us(request):
+	parameters = {}
+	return render_to_response('contact-us.haml', parameters, context_instance=RequestContext(request))
 
 def searchapi(request):
 	requiredParams = ["e","w","n","s"]

@@ -254,12 +254,12 @@ function renderRelatedItems(data) {
 		currentRelElems.clearLayers();
 	}
 	var geojsonMarkerOptions = {
-		radius: 16,
-		fillColor: "#ff7800",
+		radius: 8,
+		fillColor: "#dd3300",
 		color: "#000",
 		weight: 1,
 		opacity: 1,
-		fillOpacity: 0.8
+		fillOpacity: 0.9
 	};
 	var decor = {
 		pointToLayer: function (feature, latlng) {
@@ -270,8 +270,6 @@ function renderRelatedItems(data) {
 		}
 	};
 	var geoJsonData = osm2geo(data);
-	// console.log("XML", data);
-	// console.log("JSON", b);
 	currentRelElems = L.layerGroup([L.geoJson(geoJsonData, decor)]).addTo(map);
 }
 
@@ -279,7 +277,18 @@ function renderRelatedItems(data) {
 // var url = 'http://www.overpass-api.de/api/interpreter?data=(way(116767683);>;);out;node(269698991);out;';
 // $.get(url, myFunc);
 
+function updateMapHeight() {
+	var mapContainer = $('#map');
+	mapContainer.height($('body').height() - mapContainer.offset().top);
+}
+
 function main() {
+	updateMapHeight();
+	var resizeTimer;
+	$(window).resize(function() {
+		clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(updateMapHeight, 100);
+	});
 	initialize();
 	map.on('moveend', fetchMarkers);
 	fetchMarkers();
