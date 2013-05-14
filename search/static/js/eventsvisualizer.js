@@ -36,7 +36,8 @@ function initialize() {
 		curMapView = [48.1742, 11.5453, 13];
 	}
 	map = L.map('map').setView([curMapView[0], curMapView[1]], curMapView[2]);
-	L.tileLayer('http://{s}.tile.cloudmade.com/8afbe1354ec0452da96ac774a8dc4403/1/256/{z}/{x}/{y}.png', 
+	// L.tileLayer('http://{s}.tile.cloudmade.com/8afbe1354ec0452da96ac774a8dc4403/1/256/{z}/{x}/{y}.png', 
+	L.tileLayer('http://{s}.tile.localhost/osm_tiles/{z}/{x}/{y}.png', 
 	{
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
 		maxZoom: 18
@@ -360,6 +361,55 @@ function associateEventWithMarker() {
 	});
 }
 
+function initAngularApp() {
+	$("#nominatim-div .btn-open").click(function() {
+		$("#nominatim-div").removeClass("closed");
+	});
+	$("#nominatim-div .btn-close").click(function() {
+		$("#nominatim-div").addClass("closed");
+	});
+
+	var nApp = angular.module('eventsApp', []);
+	nApp.config(function($interpolateProvider) {
+	  $interpolateProvider.startSymbol('{[{');
+	  $interpolateProvider.endSymbol('}]}');
+	});
+}
+
+function NominatimCtrl($scope, $http) {
+	$scope.searchResults = [];
+	
+	$scope.searchSuccess = function(data) {
+		$scope.searchResults = data;
+	}
+
+	$scope.search = function() {
+		if ($scope.query != undefined) {
+			var url = "http://nominatim.openstreetmap.org/search";
+			$http({
+				method: 'get',
+				url: url,
+				params: {format: "json", q: $scope.query}
+			}).success($scope.searchSuccess);
+		}
+	}
+
+	$scope.loadSearchResultInMap = function(resultObj) {
+		if (undefined == resultObj) return;
+		console.log(resultObj);
+		map.fitBounds([
+			[resultObj.boundingbox[0], resultObj.boundingbox[2]],
+			[resultObj.boundingbox[1], resultObj.boundingbox[3]]
+		]);
+	}
+}
+
+function EventSearchCtrl($scope) {
+	$scope.search = function() {
+		
+	}
+}
+
 function main() {
 	updateMapHeight();
 	var resizeTimer;
@@ -370,6 +420,7 @@ function main() {
 	initialize();
 	map.on('moveend', fetchMarkers);
 	fetchMarkers();
+	initAngularApp();
 }
 
 main();

@@ -1,25 +1,48 @@
 {% extends 'base.haml' %}
 {% block container %}
-.container-fluid
-  #result-row.row-fluid
-    .span3.left-column
-      %p
-        %strong Search Query
-      %form#searchForm.form-inline
-        .control-group
-          %input.input-block-level{:type => "text", :name => "eventName", :placeholder => "Event Name"}
-        .control-group
-          %input.input-block-level{:type => "text", :name => "eventCategory", :placeholder => "Category"}
-        .control-group
-          %input.input-block-level.datepicker{:type => "text", :name => "eventStartDate", :data-date-format => "dd/mm/yyyy", :placeholder => "Start Date (dd/mm/YYYY)"}
-        .control-group
-          %input.input-block-level.datepicker{:type => "text", :name => "eventEndDate", :data-date-format => "dd/mm/yyyy", :placeholder => 'End Date (dd/mm/YYYY)'}
-        %button.btn.btn-primary{:type => "submit"}
-          %i.icon-search.icon-white
-          Search
-        %input.btn{:type => "reset", :value => "Reset"} 
-      %p
-        %strong Search Results
-      #searchResults
-    #map.span9
+%div{ng-app: "eventsApp"}
+  .row-fluid
+    %div{ng-controller: "NominatimCtrl"}
+      #nominatim-div.span3.closed
+        %div
+          %a.btn-open{href: "#"}
+            %img{src: "/static/images/search_by_place.png"}
+          %a.btn-close{href: "#"} Close [x]
+        %div.content
+          %p
+            %strong Search by place name
+          %form#searchByNameForm.form-inline{ng-submit: "search()"}
+            .control-group
+              %input.input-block-level{type: "text", name: "q", placeholder: "Place Name", ng-model: "query"}
+            .control-group
+              %button.btn-primary{type: "submit", ng-click: "search()"}
+                %i.icon-search.icon-white
+                Search
+          %ul.searchResults
+            %li{ng-repeat: "searchResult in searchResults"}
+              %a{ng-click: "loadSearchResultInMap(searchResult)"}
+                {[{searchResult.display_name}]}
+
+  .container-fluid{ng-controller: "EventSearchCtrl"}
+    #result-row.row-fluid
+      .span3.left-column
+        %p
+          %strong Search Query
+        %form#searchForm.form-inline{ng-submit: "search()"}
+          .control-group
+            %input.input-block-level{type: "text", name: "eventName", placeholder: "Event Name", ng-model: "eName"}
+          .control-group
+            %input.input-block-level{type: "text", name: "eventCategory", placeholder: "Category", ng-model: "eCategory"}
+          .control-group
+            %input.input-block-level.datepicker{type: "text", name: "eventStartDate", data-date-format: "dd/mm/yyyy", placeholder: "Start Date (dd/mm/YYYY)", ng-model: "eStartDate"}
+          .control-group
+            %input.input-block-level.datepicker{type: "text", name: "eventEndDate", data-date-format: "dd/mm/yyyy", placeholder: 'End Date (dd/mm/YYYY)', ng-model: "eEndDate"}
+          %button.btn.btn-primary{type: "submit", ng-click: "search()"}
+            %i.icon-search.icon-white
+            Search
+          %input.btn{type: "reset", value: "Reset"} 
+        %p
+          %strong Search Results
+        #searchResults
+      #map.span9
 {% endblock %}

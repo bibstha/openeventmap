@@ -67,3 +67,44 @@ li.event-list:hover {
 	margin-left: 0px;
 }
 
+#nominatim-div {
+	float: left;
+	position: absolute;
+	background: white;
+	/*display: none;*/
+	height: 100%;
+	border-right: 1px solid black;
+	padding-right: 10px;
+	padding-left: 5px;
+	left: 0px;
+	/*margin-left: -5px;*/
+}
+
+#nominatim-div .btn-open {
+	display: none;
+}
+
+#nominatim-div.closed {
+	width: 30px;
+}
+
+#nominatim-div.closed .content, #nominatim-div.closed .btn-close {
+	display: none;
+}
+
+#nominatim-div.closed .btn-open {
+	display: block;
+}
+
+.searchResults li {
+	padding: 0px;
+	margin: 0px;
+	list-style: none;
+	font-size: 0.9em;
+	padding-bottom: 10px;
+}
+
+.searchResults {
+	margin: 0px;
+	padding: 0px;
+}

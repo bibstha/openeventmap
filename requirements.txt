@@ -1,3 +1,4 @@
 python-dateutil
 hamlpy
-
+psycopg2
+https://github.com/simone/django-compositekey/tarball/master
