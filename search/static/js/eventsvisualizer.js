@@ -113,12 +113,6 @@ function capitaliseFirstLetter(string)
 }
 
 /**
- * Model functions
- * 
- * Changes structure of the data or returns modified data structures
- */
-
-/**
  * Returns categories
  */
 function getNodeCategories(nodes) {
@@ -337,7 +331,7 @@ function main() {
     resizeTimer = setTimeout(updateMapHeight, 100);
 	});
 	initialize();
-	// map.on('moveend', fetchMarkers);
+	map.on('moveend', fetchMarkers);
 	initAngularApp();
 }
 
