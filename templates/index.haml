@@ -23,7 +23,7 @@
               %a{ng-click: "loadSearchResultInMap(searchResult)"}
                 {[{searchResult.display_name}]}
 
-  .container-fluid{ng-controller: "EventSearchCtrl"}
+  .container-fluid{ng-controller: "EventSearchCtrl", ng-init: "fetchNodeResults"}
     #result-row.row-fluid
       .span3.left-column
         %p
@@ -43,6 +43,18 @@
           %input.btn{type: "reset", value: "Reset"} 
         %p
           %strong Search Results
-        #searchResults
+        #searchresults
+          %li{ng-repeat: "(category, eventList) in resultCategoryEventMap"}
+            %div.accordion-heading
+              %a.accordian-toggle{data-toggle: "collapse", data-parent: "#accordion2"}
+                {[{ category }]}
+            %ul
+              %li.event-list{ng-repeat: "event in getEventsForCategory(category)"}
+                {[{ event.name }]}
+                %br
+                %i.icon-eye-open
+                %a.event-list-view{href: "#", ng-click: "popupNode(event)"} View
+                %i.icon-list-alt
+                %a.event-list-relateditems{href: "#", ng-click: "showRelatedItems(event)"} Related Items
       #map.span9
 {% endblock %}

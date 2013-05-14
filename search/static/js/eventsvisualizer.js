@@ -8,19 +8,6 @@ var eventCategory = "";
 var eventStartDate = "";
 var eventEndDate = "";
 var eventMarkerHashMap = {};
-$("form button[type=submit]").click(function(event) {
-	event.preventDefault(); 
-	if (currentMarkers != undefined) {
-		currentMarkers.clearLayers();
-		currentMarkers = undefined;
-	}
-	currentMapNodes = undefined;
-	eventName = $("input[name=eventName]").val();
-	eventCategory = $("input[name=eventCategory]").val();
-	eventStartDate = $("input[name=eventStartDate]").val();
-	eventEndDate = $("input[name=eventEndDate]").val();
-	fetchMarkers();
-});
 
 function initialize() {
 	// Check if we have previously stored map coordinates
@@ -42,31 +29,6 @@ function initialize() {
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
 		maxZoom: 18
 	}).addTo(map);
-}
-
-function fetchMarkers(e) {
-	// How to get the values
-	// zoom = map.getZoom()
-	var n = map.getBounds().getNorthEast().lat;
-	var e = map.getBounds().getNorthEast().lng;
-	var s = map.getBounds().getSouthWest().lat;
-	var w = map.getBounds().getSouthWest().lng;
-
-	var lng = (e+w)/2;
-	var lat = (n+s)/2;
-	var zoom = map.getZoom();
-	$.cookie("mapView", sprintf("%.4f:%.4f:%d", lat, lng, zoom));
-	
-	$.getJSON('/searchapi/',
-	{
-		'e':e, 'w':w, 'n':n, 's':s,
-		'name':eventName,
-		'category':eventCategory,
-		'startdate':eventStartDate,
-		'enddate':eventEndDate,
-	})
-	.success(renderMarkers)
-	.success(renderResults);
 }
 
 function renderMarkers(data)
@@ -92,8 +54,6 @@ function renderMarkers(data)
 		var node = nodes[key];
 		var eventPopup = renderEventPopup(node.events);
 		var marker = L.marker([node.lat, node.lng]).bindPopup(eventPopup);
-		marker.on('mouseover', onMarkerMouseOver);
-		marker.on('mouseout', onMarkerMouseOut);
 		marker.current_node = node;
 		markers.push(marker);
 
@@ -152,34 +112,6 @@ function capitaliseFirstLetter(string)
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function getTagValue(tagList, tagKey) {
-	tagValue = tagList[tagKey];
-	if (tagValue) {
-		tagValue = capitaliseFirstLetter(tagValue);
-		return tagValue;
-	}
-	else {
-		return undefined;
-	}
-}
-
-function getTagKey(suffix, number) {
-	if(typeof(number)==='undefined') number = 0;
-	return sprintf('event:%d:%s', number, suffix);
-}
-
-function renderResults(data)
-{
-	var nodes = data.elements;
-	var nodeCategories = getNodeCategories(nodes);
-	resultContainer = $("#searchResults")[0];
-	$(resultContainer).empty();
-	$(resultContainer).append(renderNodeCategories(nodeCategories));
-	$(".collapse").collapse();
-	associateEventWithMarker();
-}
-
-
 /**
  * Model functions
  * 
@@ -191,11 +123,11 @@ function renderResults(data)
  */
 function getNodeCategories(nodes) {
 	var length = nodes.length;
-	var categories = new Array();
+	var categories = {};
 	var expectedCategories = ['social', 'sport', 'accident', 'concert', 'conference', 'construction', 'educational', 'exhibition', 'natural',
 		'political', 'traffic', 'other'];
 	for (var i=0; i<expectedCategories.length; i++) {
-		categories[expectedCategories[i]] = new Array();
+		categories[expectedCategories[i]] = [];
 	}
 	for (var i in nodes) {
 		var node = nodes[i];
@@ -211,57 +143,6 @@ function getNodeCategories(nodes) {
 		}
 	}
 	return categories;
-}
-
-
-/********
- View Functions that renders a particular piece of object
- ********/
-
-/**
- * For given nodeCategories, render them inside an accordian
- */
-function renderNodeCategories(nodeCategories) {
-	var result = "";
-	for (var key in nodeCategories) {
-		var category = nodeCategories[key];
-		var categoryRendered = "";
-		if (category.length != 0) {
-			var categoryResult = sprintf('<div class="accordion-heading">' + 
-				'<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse-%s">' +
-				"%s events</a></div>", key, capitaliseFirstLetter(key));
-			categoryResult += renderCategory(category, key);
-			result += '<div class="accordion-group">' + categoryResult + "</div>";
-		}
-	}
-	return '<div class="accordion" id="accordion2">' + result + '</div>';
-}
-
-/**
- * Render one single nodeCategory and return the result as a string
- */
-function renderCategory(category, id) {
-	var len = category.length;
-	var result = "";
-	for (var i=0; i<len; i++) {
-		result += sprintf("<li class='event-list' data-eventid='%s'>%s<br/>" +
-			"<i class='icon-eye-open'/><a href='#' class='event-list-view'>View</a> " + 
-			"<i class='icon-list-alt'/><a href='#' class='event-list-relateditems'>Related Items</a></li>", 
-			category[i].id, capitaliseFirstLetter(category[i].name.toLowerCase()));
-	}
-	return sprintf('<div id="collapse-%s" class="accordion-body collapse in mycollapse">' +
-		'<div class="accordion-inner">%s</div></div>', id, "<ul>" + result + "</ul>");
-}
-
-/**
- * When mouse is over a marker, load the relatedItems and render them
- * on the map
- */
-function onMarkerMouseOver(data) {
-	var events = data.target.current_node.events;
-	getRelatedItemsInOsmFormat(events);
-	// grab information on related items
-	// render them on the marker
 }
 
 /**
@@ -291,15 +172,6 @@ function getRelatedItemsInOsmFormat(events) {
 	if (queryStr.trim() != "") {
 		var url = 'http://www.overpass-api.de/api/interpreter?data=' + queryStr;
 		$.get(url, renderRelatedItems);	
-	}
-}
-
-/**
- * When mouse is taken away from a marker, hide the relatedItems
- */
-function onMarkerMouseOut(data) {
-	if (currentRelElems != undefined) {
-		currentRelElems.clearLayers();
 	}
 }
 
@@ -338,27 +210,6 @@ function renderRelatedItems(data) {
 function updateMapHeight() {
 	var mapContainer = $('#result-row');
 	mapContainer.height($('body').height() - mapContainer.offset().top);
-}
-
-function associateEventWithMarker() {
-	$(".event-list-view").click(function(event) {
-		console.log("Outside");
-		var event_id = $(this).parent().data('eventid');
-		console.log(event_id);
-		if (event_id && eventMarkerHashMap[event_id]) {
-			console.log('Inside');
-			var marker = eventMarkerHashMap[event_id];
-			console.log(event_id);
-			marker.openPopup();
-		}
-	});
-
-	$(".event-list-relateditems").click(function(event) {
-		var event_id = $(this).parent().data('eventid');
-		if (event_id && eventMarkerHashMap[event_id]) {
-			getRelatedItemsInOsmFormat([eventMarkerHashMap[event_id].current_node.events[event_id]]);
-		}
-	});
 }
 
 function initAngularApp() {
@@ -404,9 +255,77 @@ function NominatimCtrl($scope, $http) {
 	}
 }
 
-function EventSearchCtrl($scope) {
+function EventSearchCtrl($scope, $http) {
+	$scope.resultCategoryEventMap = {};
+
+	$scope.clearMarkers = function() {
+		if (currentMarkers != undefined) {
+			currentMarkers.clearLayers();
+			currentMarkers = undefined;
+		}
+		currentMapNodes = undefined;
+	}
+
 	$scope.search = function() {
+		$scope.clearMarkers();
+		$scope.fetchNodeResults();
+	}
+
+	$scope.fetchNodeResults = function() {
+		console.log("fecthNodeResults");
+		// How to get the values
+		// zoom = map.getZoom()
+		var n = map.getBounds().getNorthEast().lat;
+		var e = map.getBounds().getNorthEast().lng;
+		var s = map.getBounds().getSouthWest().lat;
+		var w = map.getBounds().getSouthWest().lng;
+
+		var lng = (e+w)/2;
+		var lat = (n+s)/2;
+		var zoom = map.getZoom();
+		$.cookie("mapView", sprintf("%.4f:%.4f:%d", lat, lng, zoom));
 		
+		$http({
+			method: 'get',
+			url: '/searchapi/',
+			params: {
+				'e':e, 'w':w, 'n':n, 's':s,
+				'name': $scope.eName,
+				'category': $scope.eCategory,
+				'startdate': $scope.eStartDate,
+				'enddate': $scope.eEndDate,
+			}
+		})
+		.success(renderMarkers)
+		.success($scope.updateResults);
+	}
+
+	$scope.updateResults = function(data) {
+		$scope.searchResults = data;
+		$scope.resultCategoryEventMap = {};
+		var categoryEventMap = getNodeCategories(data.elements);
+		for (category in categoryEventMap) {
+			if (categoryEventMap[category].length > 0) {
+				$scope.resultCategoryEventMap[category] = categoryEventMap[category];
+			}
+		}
+	}
+
+	$scope.getEventsForCategory = function(category) {
+		return $scope.resultCategoryEventMap[category];
+	}
+
+	$scope.popupNode = function(event) {
+		if (event.id && eventMarkerHashMap[event.id]) {
+			var marker = eventMarkerHashMap[event.id];
+			marker.openPopup();
+		}
+	}
+
+	$scope.showRelatedItems = function(event) {
+		if (event.id && eventMarkerHashMap[event.id]) {
+			getRelatedItemsInOsmFormat([eventMarkerHashMap[event.id].current_node.events[event.id]]);
+		}
 	}
 }
 
@@ -418,8 +337,7 @@ function main() {
     resizeTimer = setTimeout(updateMapHeight, 100);
 	});
 	initialize();
-	map.on('moveend', fetchMarkers);
-	fetchMarkers();
+	// map.on('moveend', fetchMarkers);
 	initAngularApp();
 }
 
