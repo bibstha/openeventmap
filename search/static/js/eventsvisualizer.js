@@ -331,7 +331,7 @@ function main() {
     resizeTimer = setTimeout(updateMapHeight, 100);
 	});
 	initialize();
-	map.on('moveend', fetchMarkers);
+	// map.on('moveend', fetchMarkers);
 	initAngularApp();
 }
 
