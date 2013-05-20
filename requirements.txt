@@ -1,4 +1,4 @@
-django==1.4.5
+django
 python-dateutil
 hamlpy
 psycopg2
