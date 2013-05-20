@@ -4,8 +4,7 @@
     %link{:rel => 'stylesheet', :type => 'text/css', :href => "/static/css/leaflet.css"}
     %link{:rel => 'stylesheet', :type => 'text/css', :href => "/static/css/styles.css"}
     %link{:rel => 'stylesheet', :type => 'text/css', :href => "/static/bootstrap/css/bootstrap_cosmo.css"}
-    %link{:rel => 'stylesheet', :type => 'text/css', :href => "/static/datepicker/css/datepicker.css"}
-    %script{:src => '/static/js/angular.min.js'}
+    %link{:rel => 'stylesheet', :type => 'text/css', :href => "/static/datepicker/bootstrap-datepicker.css"}
   %body
     .navbar
       .navbar-inner
@@ -51,17 +50,18 @@
         %button.btn{ :data-dismiss => "modal"} Close
 
 
-    %script{:type => "text/javascript", :src => "/static/js/jquery-1.9.1.min.js"}
+    %script{:type => "text/javascript", :src => "/static/js/jquery.min.js"}
     %script{:type => "text/javascript", :src => "/static/js/leaflet.js"}
     %script{:type => "text/javascript", :src => "/static/js/sprintf-0.6.js"}
     %script{:type => "text/javascript", :src => "/static/bootstrap/js/bootstrap.min.js"}
-    %script{:type => "text/javascript", :src => "/static/datepicker/js/bootstrap-datepicker.js"}
+    %script{:type => "text/javascript", :src => '/static/js/angular.min.js'}
+    %script{:type => "text/javascript", :src => "/static/js/angular-strap.min.js"}
+    %script{:type => "text/javascript", :src => "/static/datepicker/bootstrap-datepicker.js"}
     %script{:type => "text/javascript", :src => "/static/js/osm2geo.js"}
     %script{:type => "text/javascript", :src => "/static/js/jquery.cookie.js"}
     %script{:type => "text/javascript", :src => "/static/js/eventsvisualizer.js"}
     :javascript
       $(document).ready(function() {
-        $('.datepicker').datepicker();
         $('#feedback-save').click(function() {
           $.post('/feedback/post', {
             'message' : $('#feedbackModal textarea').val(),

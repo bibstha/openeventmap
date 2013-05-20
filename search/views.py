@@ -5,7 +5,10 @@ from search.models import *
 from decimal import Decimal
 from django.core import serializers
 from django.db.models import Q
-from datetime import datetime
+from datetime import datetime, time
+from dateutil import parser
+from dateutil.rrule import *
+import pprint
 
 import json
 
@@ -39,17 +42,23 @@ def searchapi(request):
 	lngMin = int(Decimal(request.GET.get("w")) * MUL_FACTOR)
 	lngMax = int(Decimal(request.GET.get("e")) * MUL_FACTOR)
 
-	query = Q(latitude__gt=latMin, latitude__lt=latMax, longitude__gt=lngMin, longitude__lt=lngMax);
+	query = Q(latitude__gt=latMin, latitude__lt=latMax, longitude__gt=lngMin, longitude__lt=lngMax)
 	if request.GET.get("name"):
 		query = query & Q(name__icontains=request.GET.get("name"))
 	if request.GET.get("category"):
 		query = query & Q(category__icontains=request.GET.get("category"))
-	if request.GET.get("startdate"):
-		query = query & Q(startdate__gte=datetime.strptime(request.GET.get("startdate"),"%d/%m/%Y"))
-	if request.GET.get("enddate"):
-		query = query & Q(startdate__lte=datetime.strptime(request.GET.get("enddate"),"%d/%m/%Y"))
-
+	
 	events = Event.objects.filter(query)
+	
+	if request.GET.get("startdate") or request.GET.get("enddate"):
+		startdate = parser.parse(request.GET.get("startdate"))
+		query = query & Q(startdate__gte=startdate)
+		
+		enddate = parser.parse(request.GET.get("enddate") or "")
+		query = query & Q(enddate__lte=enddate)
+		
+		print "StartDate, EndDate :", startdate, enddate
+		events = filterDates(events, startdate, enddate)
 
 	eventsOutput = {}
 	for event in events:
@@ -99,3 +108,73 @@ def feedback_post(request):
 def feedbacks_list(request):
 	feedbacks = Feedback.objects.all()
 	return render_to_response('feedbacks_list.haml', {'feedbacks' : feedbacks}, context_instance=RequestContext(request))
+
+def getRule(datetime, howoften):
+	howoften = howoften.lower()
+	if howoften == "yearly":
+		return rrule(YEARLY, dtstart=datetime)
+	elif howoften == "monthly":
+		return rrule(MONTHLY, dtstart=datetime)
+	elif howoften == "bimonthly":
+		return rrule(WEEKLY, interval=2)
+	elif howoften == "weekly":
+		return rrule(WEEKLY)
+	elif howoften == "biweekly":
+		return rrule(WEEKLY)
+	# elif howoften == "daily":
+	# 	return rrule(DAILY)
+	else:
+		return False
+
+def filterDates(events, startdate, enddate):
+		result = []
+		for event in events:
+			if not event.startdate:
+				continue
+
+			eStartDate = event.startdate
+			eEndDate = event.enddate or eStartDate
+
+			print eStartDate, eEndDate, event.howoften
+
+			if not event.howoften or not getRule(eStartDate, event.howoften):
+				if startdate.date() <= eStartDate and eEndDate <= enddate.date():
+					result.append(event)
+					print "Inside"
+				else:
+					continue
+			else:
+				r = getRule(eStartDate, event.howoften)
+				l = r.between(startdate, enddate)
+				if l:
+					print "L", l
+					result.append(event)
+				else:
+					continue
+
+		return result
+
+		# we assume both startdate and enddate are valid datetime
+		# result = []
+		# elif startdate and enddate:
+		# 	perform rrule.between
+		# elif not startdate :
+		# 	# perform rrule.before(enddate) query
+		# else:
+		# 	# perform rrule.after(startdate) query
+
+		# set = rruleset()
+		# for event in events:
+		# 	if not event.startdate:
+		# 		continue
+		# 	if not event.howoften:
+				
+
+		# 	if event.enddate:
+		# 	elif not event.howoften:
+		# 		if (event.startdate)
+		# 		result.append(event)
+
+		# 	 and possible.has_key(event.howoften.lower()):
+		# 		r = possible.has_key(event.howoften.lower())
+		# 		r._dtstart = 

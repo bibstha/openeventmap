@@ -214,7 +214,7 @@ function initAngularApp() {
 		$("#nominatim-div").addClass("closed");
 	});
 
-	var nApp = angular.module('eventsApp', []);
+	var nApp = angular.module('eventsApp', ['$strap.directives']);
 	nApp.config(function($interpolateProvider) {
 	  $interpolateProvider.startSymbol('{[{');
 	  $interpolateProvider.endSymbol('}]}');
@@ -241,7 +241,6 @@ function NominatimCtrl($scope, $http) {
 
 	$scope.loadSearchResultInMap = function(resultObj) {
 		if (undefined == resultObj) return;
-		console.log(resultObj);
 		map.fitBounds([
 			[resultObj.boundingbox[0], resultObj.boundingbox[2]],
 			[resultObj.boundingbox[1], resultObj.boundingbox[3]]
@@ -251,6 +250,13 @@ function NominatimCtrl($scope, $http) {
 
 function EventSearchCtrl($scope, $http) {
 	$scope.resultCategoryEventMap = {};
+
+	$scope.initialize = function() {
+		$scope.fetchNodeResults();
+		map.on('moveend', function() {
+			$scope.$apply($scope.fetchNodeResults);
+		});
+	}
 
 	$scope.clearMarkers = function() {
 		if (currentMarkers != undefined) {
@@ -266,7 +272,6 @@ function EventSearchCtrl($scope, $http) {
 	}
 
 	$scope.fetchNodeResults = function() {
-		console.log("fecthNodeResults");
 		// How to get the values
 		// zoom = map.getZoom()
 		var n = map.getBounds().getNorthEast().lat;
@@ -279,16 +284,18 @@ function EventSearchCtrl($scope, $http) {
 		var zoom = map.getZoom();
 		$.cookie("mapView", sprintf("%.4f:%.4f:%d", lat, lng, zoom));
 		
+		var params = {
+			'e':e, 'w':w, 'n':n, 's':s,
+			'name': $scope.eName,
+			'category': $scope.eCategory,
+			'startdate': $scope.eStartDate?$scope.eStartDate.toDateString():undefined,
+			'enddate': $scope.eEndDate?$scope.eEndDate.toDateString():undefined,
+		};
+
 		$http({
 			method: 'get',
 			url: '/searchapi/',
-			params: {
-				'e':e, 'w':w, 'n':n, 's':s,
-				'name': $scope.eName,
-				'category': $scope.eCategory,
-				'startdate': $scope.eStartDate,
-				'enddate': $scope.eEndDate,
-			}
+			params: params
 		})
 		.success(renderMarkers)
 		.success($scope.updateResults);
@@ -331,7 +338,6 @@ function main() {
     resizeTimer = setTimeout(updateMapHeight, 100);
 	});
 	initialize();
-	// map.on('moveend', fetchMarkers);
 	initAngularApp();
 }
 

@@ -23,7 +23,7 @@
               %a{ng-click: "loadSearchResultInMap(searchResult)"}
                 {[{searchResult.display_name}]}
 
-  .container-fluid{ng-controller: "EventSearchCtrl", ng-init: "fetchNodeResults"}
+  .container-fluid{ng-controller: "EventSearchCtrl", ng-init: "initialize()"}
     #result-row.row-fluid
       .span3.left-column
         %p
@@ -32,12 +32,17 @@
           .control-group
             %input.input-block-level{type: "text", name: "eventName", placeholder: "Event Name", ng-model: "eName"}
           .control-group
-            %input.input-block-level{type: "text", name: "eventCategory", placeholder: "Category", ng-model: "eCategory"}
+            %input.input-block-level{type: "text", name: "eventCategory", placeholder: "Category", 
+              ng-model: "eCategory"}
           .control-group
-            %input.input-block-level.datepicker{type: "text", name: "eventStartDate", data-date-format: "dd/mm/yyyy", placeholder: "Start Date (dd/mm/YYYY)", ng-model: "eStartDate"}
+            %input.input-block-level.datepicker{type: "text", name: "eventStartDate", 
+              data-date-format: "dd/mm/yyyy", placeholder: "Start Date (dd/mm/YYYY)", 
+              ng-model: "eStartDate", bs-datepicker: None}
           .control-group
-            %input.input-block-level.datepicker{type: "text", name: "eventEndDate", data-date-format: "dd/mm/yyyy", placeholder: 'End Date (dd/mm/YYYY)', ng-model: "eEndDate"}
-          %button.btn.btn-primary{type: "submit", ng-click: "search()"}
+            %input.input-block-level.datepicker{type: "text", name: "eventEndDate", 
+              data-date-format: "dd/mm/yyyy", placeholder: 'End Date (dd/mm/YYYY)', 
+              ng-model: "eEndDate", bs-datepicker: None}
+          %button.btn.btn-primary{type: "submit"}
             %i.icon-search.icon-white
             Search
           %input.btn{type: "reset", value: "Reset"} 

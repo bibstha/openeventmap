@@ -1,4 +1,6 @@
+django==1.4.5
 python-dateutil
 hamlpy
 psycopg2
 https://github.com/simone/django-compositekey/tarball/master
+https://github.com/bibstha/python-osm/tarball/master
