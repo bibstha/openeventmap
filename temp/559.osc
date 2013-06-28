@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osmChange version="0.6" generator="Osmosis 0.43.1">
+  <create>
+    <node id="1994284785" version="1" timestamp="2013-06-27T10:29:01Z" uid="1014433" user="bibstha" changeset="13727012" lat="48.1766819" lon="11.5421475"/>
+    <node id="1994284786" version="1" timestamp="2013-06-27T10:29:01Z" uid="1014433" user="bibstha" changeset="13727012" lat="48.1770416" lon="11.5428522"/>
+    <node id="1994284787" version="1" timestamp="2013-06-27T10:29:01Z" uid="1014433" user="bibstha" changeset="13727012" lat="48.1772504" lon="11.5419561"/>
+    <node id="1994284788" version="1" timestamp="2013-06-27T10:29:01Z" uid="1014433" user="bibstha" changeset="13727012" lat="48.1773375" lon="11.5424346"/>
+    <node id="1994284789" version="1" timestamp="2013-06-27T10:29:01Z" uid="1014433" user="bibstha" changeset="13727012" lat="48.1773491" lon="11.541669">
+      <tag k="event" v="yes"/>
+    </node>
+    <node id="1994284790" version="1" timestamp="2013-06-27T10:29:01Z" uid="1014433" user="bibstha" changeset="13727012" lat="48.1776623" lon="11.5414081"/>
+    <way id="188810323" version="1" timestamp="2013-06-27T10:29:01Z" uid="1014433" user="bibstha" changeset="13727012">
+      <nd ref="1994284790"/>
+      <nd ref="1994284789"/>
+    </way>
+    <way id="188810324" version="1" timestamp="2013-06-27T10:29:01Z" uid="1014433" user="bibstha" changeset="13727012">
+      <nd ref="1994284787"/>
+      <nd ref="1994284788"/>
+      <nd ref="1994284786"/>
+      <nd ref="1994284785"/>
+      <nd ref="1022704061"/>
+      <nd ref="1994284787"/>
+      <tag k="event" v="yes"/>
+    </way>
+  </create>
+</osmChange>

@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osmChange version="0.6" generator="Osmosis 0.43.1">
+  <delete>
+    <node id="201455140" version="3" timestamp="2013-06-27T10:25:15Z" uid="1014433" user="bibstha" changeset="13727011" lat="48.1767882" lon="11.5436626"/>
+    <node id="201455141" version="3" timestamp="2013-06-27T10:25:15Z" uid="1014433" user="bibstha" changeset="13727011" lat="48.1768569" lon="11.5429588"/>
+    <node id="201455142" version="5" timestamp="2013-06-27T10:25:15Z" uid="1014433" user="bibstha" changeset="13727011" lat="48.1769767" lon="11.5425124"/>
+    <node id="201455144" version="4" timestamp="2013-06-27T10:25:15Z" uid="1014433" user="bibstha" changeset="13727011" lat="48.1775036" lon="11.5420787"/>
+    <node id="201455146" version="4" timestamp="2013-06-27T10:25:15Z" uid="1014433" user="bibstha" changeset="13727011" lat="48.1777154" lon="11.5419499"/>
+    <node id="201455147" version="4" timestamp="2013-06-27T10:25:15Z" uid="1014433" user="bibstha" changeset="13727011" lat="48.1778184" lon="11.5410916"/>
+  </delete>
+  <modify>
+    <node id="541495057" version="2" timestamp="2013-06-27T10:25:15Z" uid="1014433" user="bibstha" changeset="13727011" lat="48.1771831" lon="11.5448853">
+      <tag k="amenity" v="bench"/>
+      <tag k="event" v="yes"/>
+    </node>
+  </modify>
+  <delete>
+    <node id="541496729" version="3" timestamp="2013-06-27T10:25:15Z" uid="1014433" user="bibstha" changeset="13727011" lat="48.1770513" lon="11.5423058"/>
+    <node id="541496749" version="2" timestamp="2013-06-27T10:25:15Z" uid="1014433" user="bibstha" changeset="13727011" lat="48.1778299" lon="11.5417525"/>
+    <node id="1038276746" version="2" timestamp="2013-06-27T10:25:15Z" uid="1014433" user="bibstha" changeset="13727011" lat="48.1769144" lon="11.5427097"/>
+    <node id="1038276752" version="2" timestamp="2013-06-27T10:25:15Z" uid="1014433" user="bibstha" changeset="13727011" lat="48.1771336" lon="11.5422231"/>
+  </delete>
+  <create>
+    <node id="1994284784" version="1" timestamp="2013-06-27T10:25:14Z" uid="1014433" user="bibstha" changeset="13727011" lat="48.1774767" lon="11.5419996">
+      <tag k="event" v="yes"/>
+    </node>
+  </create>
+  <delete>
+    <way id="19375423" version="6" timestamp="2013-06-27T10:25:15Z" uid="1014433" user="bibstha" changeset="13727011"/>
+  </delete>
+  <modify>
+    <way id="43204992" version="2" timestamp="2013-06-27T10:25:14Z" uid="1014433" user="bibstha" changeset="13727011">
+      <nd ref="541497017"/>
+      <nd ref="541497019"/>
+      <nd ref="541497022"/>
+      <nd ref="541497023"/>
+      <nd ref="541497017"/>
+      <tag k="building" v="yes"/>
+      <tag k="event" v="yes"/>
+    </way>
+  </modify>
+</osmChange>

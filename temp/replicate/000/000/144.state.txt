@@ -1,0 +1,7 @@
+#Sun Jun 23 20:14:02 CEST 2013
+sequenceNumber=144
+txnMaxQueried=36613
+txnReadyList=
+timestamp=2013-06-23T18\:14\:01Z
+txnMax=36613
+txnActiveList=

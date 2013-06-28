@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osmChange version="0.6" generator="Osmosis 0.43.1">
+  <create>
+    <node id="1994284791" version="1" timestamp="2013-06-27T14:19:42Z" uid="1014433" user="bibstha" changeset="13727013" lat="48.1777153" lon="11.5416948"/>
+  </create>
+  <modify>
+    <way id="188810323" version="2" timestamp="2013-06-27T14:19:42Z" uid="1014433" user="bibstha" changeset="13727013">
+      <nd ref="1994284791"/>
+      <nd ref="1994284790"/>
+      <nd ref="1994284789"/>
+    </way>
+  </modify>
+</osmChange>

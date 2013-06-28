@@ -22,20 +22,16 @@ class Command(BaseCommand):
 			exit(-1)
 		else:
 			f = open(filename)
-			file_contents = f.read()
-			osc = OSCXMLFile(content=file_contents)
-			osc.statistic()
+			osc = OSCXMLFile(f)
+			
+			# Take care of deletion first
+			for k in osc.delete_nodes:
+				q = Event.objects.filter(event_type="node")
+				print(q)
 
-			# Create first
-			for node_id, node in osc.create_nodes.iteritems():
-				# Event.objects.filter(event_type='node', type_id=)
-				print 'Deleting all events with node_id ', node_id
-				# Event.objects.filter(event_type='node', type_id=node_id).delete()
+			# Insertion, always comes before modification
 
-			for node_id, node in osc.modify_nodes.iteritems():
-				print 'Modifying all events with node_id', node_id
-				# node.tags
-
+			# Modification
 
 
 		
