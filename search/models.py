@@ -1,4 +1,5 @@
-from django.db import models
+# from django.db import models
+from django.contrib.gis.db import models
 from compositekey import db
 import re
 
@@ -18,7 +19,9 @@ class Event(models.Model):
 	howoften = models.CharField(max_length=255)
 	latitude = models.IntegerField(null=True, db_index=True)
 	longitude = models.IntegerField(null=True, db_index=True)
+	geom = models.GeometryField()
 	k = models.CharField(max_length=255)
+	objects = models.GeoManager()
 
 
 class NodeTag(models.Model):
