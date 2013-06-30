@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osmChange version="0.6" generator="Osmosis 0.43.1">
+  <modify>
+    <node id="1994284789" version="2" timestamp="2013-06-30T19:06:56Z" uid="1014433" user="bibstha" changeset="13727014" lat="48.1773491" lon="11.541669">
+      <tag k="event" v="yes"/>
+      <tag k="event:0:category" v="concert"/>
+      <tag k="event:0:name" v="test"/>
+      <tag k="event:0:subcategory" v="50s / 60s era"/>
+    </node>
+  </modify>
+</osmChange>

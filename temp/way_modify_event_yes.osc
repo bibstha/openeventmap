@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osmChange version="0.6" generator="Osmosis 0.43.1">
+  <modify>
+    <way id="188810324" version="2" timestamp="2013-06-30T19:08:49Z" uid="1014433" user="bibstha" changeset="13727015">
+      <nd ref="1994284787"/>
+      <nd ref="1994284788"/>
+      <nd ref="1994284786"/>
+      <nd ref="1994284785"/>
+      <nd ref="1022704061"/>
+      <nd ref="1994284787"/>
+      <tag k="event" v="yes"/>
+      <tag k="event:0:category" v="sport"/>
+      <tag k="event:0:name" v="Small Running Track"/>
+      <tag k="event:0:startdate" v="01.06.2012-00:00"/>
+      <tag k="event:0:subcategory" v="Running"/>
+    </way>
+  </modify>
+</osmChange>

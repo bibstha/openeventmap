@@ -3,3 +3,4 @@
 .directory
 eventsvisualizer/settings.py
 .DS_Store
+logfile*
