@@ -5,12 +5,14 @@ from search.models import *
 from decimal import Decimal
 from django.core import serializers
 from django.db.models import Q
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from dateutil import parser
 from dateutil.rrule import *
 import pprint
-
 import json
+
+import logging
+logger = logging.getLogger(__name__)
 
 def index(request):
 	parameters = {}
@@ -51,14 +53,17 @@ def searchapi(request):
 	events = Event.objects.filter(query)
 	
 	if request.GET.get("startdate") or request.GET.get("enddate"):
-		startdate = parser.parse(request.GET.get("startdate"))
+		startdate = parser.parse(request.GET.get("startdate"), dayfirst=True)
 		query = query & Q(startdate__gte=startdate)
 		
-		enddate = parser.parse(request.GET.get("enddate") or "")
+		enddate = parser.parse(request.GET.get("enddate") or "", dayfirst=True)
 		query = query & Q(enddate__lte=enddate)
 		
 		print "StartDate, EndDate :", startdate, enddate
 		events = filterDates(events, startdate, enddate)
+
+	# order these events closest to today
+	# events = _sortEvents(events)
 
 	eventsOutput = {}
 	for event in events:
@@ -154,27 +159,11 @@ def filterDates(events, startdate, enddate):
 
 		return result
 
-		# we assume both startdate and enddate are valid datetime
-		# result = []
-		# elif startdate and enddate:
-		# 	perform rrule.between
-		# elif not startdate :
-		# 	# perform rrule.before(enddate) query
-		# else:
-		# 	# perform rrule.after(startdate) query
+# def _sortEvents(events, date=datetime.now()):
+# 	q = sorted(events, key=lambda event:_getDateDiff(event.startdate))
+# 	print q
+# 	return q
 
-		# set = rruleset()
-		# for event in events:
-		# 	if not event.startdate:
-		# 		continue
-		# 	if not event.howoften:
-				
-
-		# 	if event.enddate:
-		# 	elif not event.howoften:
-		# 		if (event.startdate)
-		# 		result.append(event)
-
-		# 	 and possible.has_key(event.howoften.lower()):
-		# 		r = possible.has_key(event.howoften.lower())
-		# 		r._dtstart = 
+# def _getDateDiff(d):
+# 	# print abs(datetime.now().date() - datetime(datetime.now().year, d.month, d.day).date()) if d != None else timedelta(days=366)
+# 	return abs(datetime.now().date() - datetime(datetime.now().year, d.month, d.day).date()) if d != None else timedelta(days=366)

@@ -74,7 +74,19 @@ function renderMarkers(data)
 function renderEventPopup(events) {
 	var length = events.length;
 	var tagPopUpWrapper = "";
+	var sortedKeys = [];
+	var currentDate = new Date();
 	for (var key in events) {
+		var sd = events[key].startdate.split("/");
+		sd = Math.abs( currentDate - new Date( [sd[1], sd[0], currentDate.getFullYear()].join("/") ) );
+		// sortedKeys.push( [key, sd, events[key].startdate] );
+		sortedKeys.push( [key, sd] );
+	}
+	sortedKeys = sortedKeys.sort(function(a, b) {
+		return a[1] - b[1];
+	});
+	for (var k in sortedKeys) {
+		var key = sortedKeys[k][0];
 		event = events[key];
 		var tagPopupValue = "";
 		// for (var i=0; i<length; i++) {
