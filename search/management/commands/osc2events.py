@@ -94,5 +94,10 @@ class Command(BaseCommand):
 
 		logger.info("%s %d has %d events" % (event_type, type_id, len(events)))
 		for eventId in events:
-			events[eventId].save()
+			q = Event.objects.filter(event_type=event_type, type_id=type_id)
+			if not len(q):
+				logger.info("Creating event with id %d" % (type_id,))
+				events[eventId].save()
+			else:
+				logger.warn("Event withid %d already exists, creation ignored" % (type_id, ))
 	
