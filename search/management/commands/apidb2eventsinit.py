@@ -88,11 +88,13 @@ class ApiToEvent:
 		try:
 			strDate = strDate.lower().replace('uhr', '').replace('nach', '')
 			strDate = re.sub("\s+", " ", strDate)
-			dateValue = parse(strDate)
+			dateValue = parse(strDate, dayfirst=True)
+			logger.debug("Date %s parsed to %s" % (strDate, dateValue))
 		except ValueError:
 			try:
 				# print strDate
 				dateValue = datetime.strptime(strDate, "%d.%m.%Y %H.%M")
+				logger.debug("Date %s parsed to %s second time" % (strDate, dateValue))
 			except ValueError:
 				# print "Threw error"
 				dateValue = None
