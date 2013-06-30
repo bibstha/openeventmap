@@ -19,7 +19,7 @@ class Event(models.Model):
 	howoften = models.CharField(max_length=255)
 	latitude = models.IntegerField(null=True, db_index=True)
 	longitude = models.IntegerField(null=True, db_index=True)
-	geom = models.GeometryField()
+	geom = models.PointField(null=True, blank=True, spatial_index=True, srid=900913)
 	k = models.CharField(max_length=255)
 	objects = models.GeoManager()
 
