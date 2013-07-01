@@ -24,7 +24,7 @@ function initialize() {
 	}
 	map = L.map('map').setView([curMapView[0], curMapView[1]], curMapView[2]);
 	// L.tileLayer('http://{s}.tile.cloudmade.com/8afbe1354ec0452da96ac774a8dc4403/1/256/{z}/{x}/{y}.png', 
-	L.tileLayer('http://{s}.tile.localhost/osm_tiles/{z}/{x}/{y}.png', 
+	L.tileLayer('http://{s}.tile.bibek.com.np/osm_tiles/{z}/{x}/{y}.png', 
 	{
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
 		maxZoom: 18
