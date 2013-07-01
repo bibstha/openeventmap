@@ -48,12 +48,12 @@
           %input.btn{type: "reset", value: "Reset"} 
         %p
           %strong Search Results
-        #searchresults
-          %li{ng-repeat: "(category, eventList) in resultCategoryEventMap"}
-            %div.accordion-heading
-              %a.accordian-toggle{data-toggle: "collapse", data-parent: "#accordion2"}
-                {[{ category }]}
-            %ul
+        %ul#searchresults
+          %li{ng-repeat: "(category, eventList) in resultCategoryEventMap", class: "colorClass {[{ colorClass($index) }]}"}
+            %div
+              %b
+                {[{ capitalise(category) }]} Events
+            %ul{}
               %li.event-list{ng-repeat: "event in getEventsForCategory(category)"}
                 {[{ event.name }]}
                 %br

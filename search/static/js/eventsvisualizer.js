@@ -8,6 +8,8 @@ var eventCategory = "";
 var eventStartDate = "";
 var eventEndDate = "";
 var eventMarkerHashMap = {};
+// var color = ["red", "orange", "green", "blue", "purple", "cadetblue"];
+var color = ["red", "green", "blue", "purple", "cadetblue"];
 
 function initialize() {
 	// Check if we have previously stored map coordinates
@@ -77,9 +79,13 @@ function renderEventPopup(events) {
 	var sortedKeys = [];
 	var currentDate = new Date();
 	for (var key in events) {
-		var sd = events[key].startdate.split("/");
-		sd = Math.abs( currentDate - new Date( [sd[1], sd[0], currentDate.getFullYear()].join("/") ) );
-		// sortedKeys.push( [key, sd, events[key].startdate] );
+		if (events[key].startdate) {
+			var sd = events[key].startdate.split("/");
+			sd = Math.abs( currentDate - new Date( [sd[1], sd[0], currentDate.getFullYear()].join("/") ) );	
+		}
+		else {
+			sd = 365000000;
+		}
 		sortedKeys.push( [key, sd] );
 	}
 	sortedKeys = sortedKeys.sort(function(a, b) {
@@ -147,6 +153,14 @@ function getNodeCategories(nodes) {
 				categories['other'].push(eventObj);	
 			}
 		}
+	}
+	for (key in categories) {
+		// console.log(categories[key]);
+		categories[key].sort(function(a, b) { 
+			// console.log(a.name.toLowerCase());
+			return a.name.toLowerCase() < b.name.toLowerCase() 
+		});
+		// console.log("Sorted", categories[key]);
 	}
 	return categories;
 }
@@ -339,6 +353,15 @@ function EventSearchCtrl($scope, $http) {
 		if (event.id && eventMarkerHashMap[event.id]) {
 			getRelatedItemsInOsmFormat([eventMarkerHashMap[event.id].current_node.events[event.id]]);
 		}
+	}
+
+	$scope.colorClass = function(index) {
+		index = index % color.length;
+		return "colorClass" + capitaliseFirstLetter(color[index]);
+	}
+
+	$scope.capitalise = function(word) {
+		return capitaliseFirstLetter(word);
 	}
 }
 
