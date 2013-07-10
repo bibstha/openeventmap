@@ -48,6 +48,8 @@
           %input.btn{type: "reset", value: "Reset"} 
         %p
           %strong Search Results
+          %a{href: "http://osm.bibek.com.np/export?lat={[{map_center.lat}]}&lon={[{map_center.lng}]}&zoom={[{map_center.zoom}]}", target: '_blank' }
+            Export
         %ul#searchresults
           %li{ng-repeat: "(category, eventList) in resultCategoryEventMap", class: "colorClass {[{ colorClass($index) }]}"}
             %div

@@ -26,7 +26,7 @@ function initialize() {
 	}
 	map = L.map('map').setView([curMapView[0], curMapView[1]], curMapView[2]);
 	// L.tileLayer('http://{s}.tile.cloudmade.com/8afbe1354ec0452da96ac774a8dc4403/1/256/{z}/{x}/{y}.png', 
-	L.tileLayer('http://{s}.tile.bibek.com.np/osm_tiles/{z}/{x}/{y}.png', 
+	L.tileLayer('http://{s}.tile.openeventmap.tum.de/osm_tiles/{z}/{x}/{y}.png', 
 	{
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
 		maxZoom: 18
@@ -276,6 +276,7 @@ function NominatimCtrl($scope, $http) {
 
 function EventSearchCtrl($scope, $http) {
 	$scope.resultCategoryEventMap = {};
+	$scope.map_center = {};
 
 	$scope.initialize = function() {
 		$scope.fetchNodeResults();
@@ -317,6 +318,7 @@ function EventSearchCtrl($scope, $http) {
 			'startdate': $scope.eStartDate?$scope.eStartDate.toDateString():undefined,
 			'enddate': $scope.eEndDate?$scope.eEndDate.toDateString():undefined,
 		};
+		$scope.map_center = {'lng': lng, 'lat': lat, 'zoom': zoom};
 
 		$http({
 			method: 'get',
