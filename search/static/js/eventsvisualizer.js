@@ -9,7 +9,19 @@ var eventStartDate = "";
 var eventEndDate = "";
 var eventMarkerHashMap = {};
 // var color = ["red", "orange", "green", "blue", "purple", "cadetblue"];
-var color = ["red", "green", "blue", "purple", "cadetblue"];
+// var color = ["red", "green", "blue", "purple", "cadetblue"];
+var color = [
+	"red", 
+	"orange",
+	"green",
+	"blue", 
+	"purple",
+	"darkred", 
+	"darkblue",
+	"darkgreen", 
+	"darkpurple", 
+	"cadetblue"
+];
 
 function initialize() {
 	// Check if we have previously stored map coordinates
@@ -31,6 +43,17 @@ function initialize() {
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
 		maxZoom: 18
 	}).addTo(map);
+
+	$(document).ready(function() {
+		$('#myTab a').click(function (e) {
+			e.preventDefault();
+			$(this).tab('show');
+		})
+		$(function() {
+			$('#myTab a:last').tab('show');
+		});
+	});
+	
 }
 
 function renderMarkers(data)
@@ -54,6 +77,7 @@ function renderMarkers(data)
 	var markers = [];
 	for (var key in nodes) {
 		var node = nodes[key];
+		console.log(node);
 		var eventPopup = renderEventPopup(node.events);
 		var marker = L.marker([node.lat, node.lng]).bindPopup(eventPopup);
 		marker.current_node = node;
@@ -227,9 +251,12 @@ function renderRelatedItems(data) {
  *
  * Should be called when browser size is changed $(window).resize()
  */
-function updateMapHeight() {
-	var mapContainer = $('#result-row');
+function updateDivHeight() {
+	var mapContainer = $('#map');
 	mapContainer.height($('body').height() - mapContainer.offset().top);
+
+	var searchResultContainer = $('#searchresults');
+	searchResultContainer.height($('body').height() - searchResultContainer.offset().top);
 }
 
 function initAngularApp() {
@@ -277,9 +304,11 @@ function NominatimCtrl($scope, $http) {
 function EventSearchCtrl($scope, $http) {
 	$scope.resultCategoryEventMap = {};
 	$scope.map_center = {};
+	$scope.currentColorCategory = "";
+	$scope.currentColorIndex = -1;
 
 	$scope.initialize = function() {
-		$scope.fetchNodeResults();
+		// $scope.fetchNodeResults();
 		map.on('moveend', function() {
 			$scope.$apply($scope.fetchNodeResults);
 		});
@@ -345,7 +374,7 @@ function EventSearchCtrl($scope, $http) {
 	}
 
 	$scope.popupNode = function(event) {
-		if (event.id && eventMarkerHashMap[event.id]) {
+		if (event.id && eventMarkerHashMap[evenpt.id]) {
 			var marker = eventMarkerHashMap[event.id];
 			marker.openPopup();
 		}
@@ -368,11 +397,11 @@ function EventSearchCtrl($scope, $http) {
 }
 
 function main() {
-	updateMapHeight();
+	updateDivHeight();
 	var resizeTimer;
 	$(window).resize(function() {
 		clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(updateMapHeight, 100);
+		resizeTimer = setTimeout(updateDivHeight, 100);
 	});
 	initialize();
 	initAngularApp();

@@ -104,34 +104,54 @@ li.event-list:hover {
 	padding-bottom: 10px;
 }
 
-.colorClass {
-	border-bottom: 1px solid #999;
-	padding-left: 10px;
-	padding-top: 10px;
-}
-
-.colorClass ul {
+#searchresults, #searchresults ul {
 	margin: 0px;
 	list-style: none;
 }
-.colorClassGreen {
-	background-color: #BDFADF;
-}
 
-.colorClassCadetblue {
-	background-color: #C8FAF8;
-}
-
-.colorClassBlue {
-	background-color: #DCE9FA;
-}
-
-.colorClassPurple {
-	background-color: #ECDBF5;
+#searchresults > li {
+	border-bottom: #cccccc 1px solid;
+	margin-bottom: 5px;
 }
 
 .colorClassRed {
-	background-color: #FFE6E1;
+	color: #CA2820;
+}
+
+.colorClassDarkred {
+	color: #8E2129;
+}
+
+.colorClassOrange {
+	color: #F28425;
+}
+
+.colorClassGreen {
+	color: #60A51D;
+}
+
+.colorClassDarkgreen {
+	color: #5F711B;
+}
+
+.colorClassBlue {
+	color: #2F99D5;
+}
+
+.colorClassDarkblue {
+	color: #0A5192;
+}
+
+.colorClassPurple {
+	color: #C535AB;
+}
+
+.colorClassDarkpurple {
+	color: #482858;
+}
+
+.colorClassCadetblue {
+	color: #335665;
 }
 
 ul#searchresults {

@@ -1,0 +1,57 @@
+%ul#myTab.nav.nav-tabs
+  %li
+    %a{href: "#nominatim"} Place Search
+  %li.active
+    %a{href: "#eventsearch"} Event Search
+
+%div.tab-content
+  #nominatim.tab-pane{ng-controller: "NominatimCtrl"}
+    %div.content
+      %form#searchByNameForm.form-inline{ng-submit: "search()"}
+        .control-group
+          %input.input-block-level{type: "text", name: "q", placeholder: "Place Name", ng-model: "query"}
+        .control-group
+          %button.btn-primary{type: "submit", ng-click: "search()"}
+            %i.icon-search.icon-white
+            Search
+      %ul.searchResults
+        %li{ng-repeat: "searchResult in searchResults"}
+          %a{ng-click: "loadSearchResultInMap(searchResult)"}
+            {[{searchResult.display_name}]}
+
+  #eventsearch.tab-pane.active{ng-controller: "EventSearchCtrl", ng-init: "initialize()"}
+    %form#searchForm.form-inline{ng-submit: "search()"}
+      .control-group
+        %input.input-block-level{type: "text", name: "eventName", placeholder: "Event Name", ng-model: "eName"}
+      .control-group
+        %input.input-block-level{type: "text", name: "eventCategory", placeholder: "Category", 
+          ng-model: "eCategory"}
+      .control-group
+        %input.input-block-level.datepicker{type: "text", name: "eventStartDate", 
+          data-date-format: "dd/mm/yyyy", placeholder: "Start Date (dd/mm/YYYY)", 
+          ng-model: "eStartDate", bs-datepicker: None}
+      .control-group
+        %input.input-block-level.datepicker{type: "text", name: "eventEndDate", 
+          data-date-format: "dd/mm/yyyy", placeholder: 'End Date (dd/mm/YYYY)', 
+          ng-model: "eEndDate", bs-datepicker: None}
+      %button.btn.btn-primary{type: "submit"}
+        %i.icon-search.icon-white
+        Search
+      %input.btn{type: "reset", value: "Reset"} 
+    %p
+      %strong Search Results
+      %a{href: "http://osm.bibek.com.np/export?lat={[{map_center.lat}]}&lon={[{map_center.lng}]}&zoom={[{map_center.zoom}]}", target: '_blank' }
+        Export
+    %ul#searchresults
+      %li{ng-repeat: "(category, eventList) in resultCategoryEventMap"}
+        %div
+          %b{class: "colorClass {[{ colorClass($index) }]}"}
+            {[{ capitalise(category) }]} Events
+        %ul{}
+          %li.event-list{ng-repeat: "event in getEventsForCategory(category)"}
+            {[{ event.name }]}
+            %br
+            %i.icon-eye-open
+            %a.event-list-view{href: "#", ng-click: "popupNode(event)"} View
+            %i.icon-list-alt
+            %a.event-list-relateditems{href: "#", ng-click: "showRelatedItems(event)"} Related Items

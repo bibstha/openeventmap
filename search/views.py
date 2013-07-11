@@ -78,8 +78,8 @@ def searchapi(request):
 				eventsOutput[event.type_id]['events'][event.id] = {
 					'id' : event.id,
 					'name' : event.name,
-					'category' : event.category.capitalize(),
-					'subcategory' : event.subcategory.capitalize(),
+					'category' : event.category.strip().capitalize(),
+					'subcategory' : event.subcategory.strip().capitalize(),
 					'url' : event.url,
 					'num_participants' : event.num_participants,
 					'howoften' : event.howoften,
