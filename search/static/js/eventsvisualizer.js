@@ -22,6 +22,7 @@ var color = [
 	"darkpurple", 
 	"cadetblue"
 ];
+var colorMap = {};
 
 function initialize() {
 	// Check if we have previously stored map coordinates
@@ -77,9 +78,22 @@ function renderMarkers(data)
 	var markers = [];
 	for (var key in nodes) {
 		var node = nodes[key];
-		console.log(node);
+		// console.log(node);
 		var eventPopup = renderEventPopup(node.events);
-		var marker = L.marker([node.lat, node.lng]).bindPopup(eventPopup);
+		var eventCategories = getEventCategories(node.events);
+		// console.log(eventCategories.length);
+		// console.log(eventCategories);
+		
+		if (eventCategories.length == 1) {
+			var coloredMarker = L.AwesomeMarkers.icon({
+				icon: undefined,
+				color: colorMap[eventCategories[0]]
+			});
+			var marker = L.marker([node.lat, node.lng], {icon: coloredMarker}).bindPopup(eventPopup);
+		}
+		else {
+			var marker = L.marker([node.lat, node.lng]).bindPopup(eventPopup);
+		}
 		marker.current_node = node;
 		markers.push(marker);
 
@@ -95,6 +109,18 @@ function renderMarkers(data)
 	else {
 		currentMarkers = L.layerGroup(markers).addTo(map);
 	}
+}
+
+function getEventCategories(events) {
+	var categories = [];
+	for (var key in events) {
+		var category = events[key].category;
+		if (category == "") { category = "Other"}
+		if (categories.indexOf(category) == -1) {
+			categories.push(category);
+		}
+	}
+	return categories;
 }
 
 function renderEventPopup(events) {
@@ -304,8 +330,6 @@ function NominatimCtrl($scope, $http) {
 function EventSearchCtrl($scope, $http) {
 	$scope.resultCategoryEventMap = {};
 	$scope.map_center = {};
-	$scope.currentColorCategory = "";
-	$scope.currentColorIndex = -1;
 
 	$scope.initialize = function() {
 		// $scope.fetchNodeResults();
@@ -354,6 +378,7 @@ function EventSearchCtrl($scope, $http) {
 			url: '/searchapi/',
 			params: params
 		})
+		.success($scope.buildColorMap)
 		.success(renderMarkers)
 		.success($scope.updateResults);
 	}
@@ -374,7 +399,7 @@ function EventSearchCtrl($scope, $http) {
 	}
 
 	$scope.popupNode = function(event) {
-		if (event.id && eventMarkerHashMap[evenpt.id]) {
+		if (event.id && eventMarkerHashMap[event.id]) {
 			var marker = eventMarkerHashMap[event.id];
 			marker.openPopup();
 		}
@@ -386,13 +411,22 @@ function EventSearchCtrl($scope, $http) {
 		}
 	}
 
-	$scope.colorClass = function(index) {
-		index = index % color.length;
-		return "colorClass" + capitaliseFirstLetter(color[index]);
+	$scope.colorClass = function(category) {
+		category = capitaliseFirstLetter(category);
+		return "colorClass" + capitaliseFirstLetter(colorMap[category]);
+		// return "";
 	}
 
 	$scope.capitalise = function(word) {
 		return capitaliseFirstLetter(word);
+	}
+
+	$scope.buildColorMap = function(data) {
+		var i = 0;
+		for (var ck in data.categories) {
+			colorMap[data.categories[ck]] = color[i % color.length];
+			i++;
+		}
 	}
 }
 

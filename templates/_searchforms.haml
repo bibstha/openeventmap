@@ -45,7 +45,7 @@
     %ul#searchresults
       %li{ng-repeat: "(category, eventList) in resultCategoryEventMap"}
         %div
-          %b{class: "colorClass {[{ colorClass($index) }]}"}
+          %b{class: "colorClass {[{ colorClass(category) }]}"}
             {[{ capitalise(category) }]} Events
         %ul{}
           %li.event-list{ng-repeat: "event in getEventsForCategory(category)"}

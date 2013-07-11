@@ -66,6 +66,7 @@ def searchapi(request):
 	# events = _sortEvents(events)
 
 	eventsOutput = {}
+	eventCategories = []
 	for event in events:
 		if event.event_type == "node":
 			if not eventsOutput.has_key(event.type_id):
@@ -97,8 +98,12 @@ def searchapi(request):
 						eventsOutput[event.type_id]['events'][event.id]['enddate'] = event.enddate.strftime("%d/%m/%Y %H:%M")
 					else:
 						eventsOutput[event.type_id]['events'][event.id]['enddate'] = event.enddate.strftime("%d/%m/%Y")
-
-	return HttpResponse(json.dumps({'elements':eventsOutput}), content_type="application/json")
+		category = event.category.strip().capitalize()
+		if category != "" and category not in eventCategories:
+			eventCategories.append(category)
+	eventCategories.sort()
+	eventCategories.append("Other")
+	return HttpResponse(json.dumps({'elements':eventsOutput, 'categories':eventCategories}), content_type="application/json")
 
 def feedback_post(request):
 	if request.POST.get("message"):
