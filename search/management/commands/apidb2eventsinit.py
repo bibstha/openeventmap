@@ -29,7 +29,7 @@ class ApiToEvent:
 				if eventTag == "name":
 					events[eventId].name = nodeTag.v
 				elif eventTag == "category":
-					events[eventId].category = nodeTag.v
+					events[eventId].category = nodeTag.v.strip.lower()
 				elif eventTag == "subcategory":
 					events[eventId].subcategory = nodeTag.v
 				elif eventTag == "startdate":
@@ -68,7 +68,7 @@ class ApiToEvent:
 				if eventTag == "name":
 					events[eventId].name = wayTag.v
 				elif eventTag == "category":
-					events[eventId].category = wayTag.v
+					events[eventId].category = wayTag.v.strip.lower()
 				elif eventTag == "subcategory":
 					events[eventId].subcategory = wayTag.v
 				elif eventTag == "startdate":
