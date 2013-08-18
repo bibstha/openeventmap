@@ -161,3 +161,55 @@ ul#searchresults {
 #searchResults li {
 	margin: 0px;
 }
+
+.awesome-marker-half {
+  background: url('../images/markers-soft@half.png') no-repeat 0 0;
+  width: 18px;
+  height: 23px;
+  position:absolute;
+  left:0;
+  top:0;
+  display: block;
+  text-align: center;
+}
+
+/* Colors */
+.awesome-marker-icon-red {
+  background-position: 0 0;
+}
+
+.awesome-marker-icon-orange {
+  background-position: -18px 0;
+}
+
+.awesome-marker-icon-green {
+  background-position: -36px 0;
+}
+
+.awesome-marker-icon-blue {
+  background-position: -54px 0;
+}
+
+.awesome-marker-icon-purple {
+  background-position: -72px 0;
+}
+
+.awesome-marker-icon-darkred {
+  background-position: -90px 0;
+}
+
+.awesome-marker-icon-darkblue {
+  background-position: -108px 0;
+}
+
+.awesome-marker-icon-darkgreen {
+  background-position: -126px 0;
+}
+
+.awesome-marker-icon-darkpurple {
+  background-position: -144px 0;
+}
+
+.awesome-marker-icon-cadetblue {
+  background-position: -162px 0;
+}

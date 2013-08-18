@@ -87,7 +87,10 @@ function renderMarkers(data)
 		if (eventCategories.length == 1) {
 			var coloredMarker = L.AwesomeMarkers.icon({
 				icon: undefined,
-				color: colorMap[eventCategories[0]]
+				color: colorMap[eventCategories[0]],
+				className: 'awesome-marker-half',
+				iconSize: [18, 24],
+				iconAnchor:   [9, 21]
 			});
 			var marker = L.marker([node.lat, node.lng], {icon: coloredMarker}).bindPopup(eventPopup);
 		}
