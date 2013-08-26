@@ -333,9 +333,9 @@ function NominatimCtrl($scope, $http) {
 function EventSearchCtrl($scope, $http) {
 	$scope.resultCategoryEventMap = {};
 	$scope.map_center = {};
+	$scope.firstSearchFired = false;
 
 	$scope.initialize = function() {
-		// $scope.fetchNodeResults();
 		map.on('moveend', function() {
 			$scope.$apply($scope.fetchNodeResults);
 		});
@@ -350,11 +350,13 @@ function EventSearchCtrl($scope, $http) {
 	}
 
 	$scope.search = function() {
+		$scope.firstSearchFired = true;
 		$scope.clearMarkers();
 		$scope.fetchNodeResults();
 	}
 
 	$scope.fetchNodeResults = function() {
+		if (!$scope.firstSearchFired) return;
 		// How to get the values
 		// zoom = map.getZoom()
 		var n = map.getBounds().getNorthEast().lat;
