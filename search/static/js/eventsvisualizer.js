@@ -316,7 +316,12 @@ function NominatimCtrl($scope, $http) {
 			$http({
 				method: 'get',
 				url: url,
-				params: {format: "json", q: $scope.query}
+				params: {
+					format: "json", 
+					q: $scope.query,
+					viewbox: "11.305,48.274,12.482,47.675",
+					bounded: 1
+				}
 			}).success($scope.searchSuccess);
 		}
 	}
@@ -432,6 +437,13 @@ function EventSearchCtrl($scope, $http) {
 			colorMap[data.categories[ck]] = color[i % color.length];
 			i++;
 		}
+	}
+
+	$scope.searchResultDiv = function() {
+		if (jQuery.isEmptyObject($scope.resultCategoryEventMap))
+			return "hide";
+		else
+			return "";
 	}
 }
 

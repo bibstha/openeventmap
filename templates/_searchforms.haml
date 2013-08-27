@@ -38,7 +38,7 @@
         %i.icon-search.icon-white
         Search
       %input.btn{type: "reset", value: "Reset"} 
-    %p
+    %p{class: "{[{ searchResultDiv() }]}" }
       %strong Search Results
       %a{href: "http://osm.openeventmap.tum.de/export?lat={[{map_center.lat}]}&lon={[{map_center.lng}]}&zoom={[{map_center.zoom}]}", target: '_blank' }
         Export
