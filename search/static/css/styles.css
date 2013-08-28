@@ -109,10 +109,10 @@ li.event-list:hover {
 	list-style: none;
 }
 
-#searchresults > li {
+/*#searchresults > li {
 	border-bottom: #cccccc 1px solid;
 	margin-bottom: 5px;
-}
+}*/
 
 .colorClassRed {
 	color: #CA2820;

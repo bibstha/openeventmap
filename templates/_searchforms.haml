@@ -42,16 +42,17 @@
       %strong Search Results
       %a{href: "http://osm.openeventmap.tum.de/export?lat={[{map_center.lat}]}&lon={[{map_center.lng}]}&zoom={[{map_center.zoom}]}", target: '_blank' }
         Export
-    %ul#searchresults
-      %li{ng-repeat: "(category, eventList) in resultCategoryEventMap"}
-        %div
-          %b{class: "colorClass {[{ colorClass(category) }]}"}
+    %ul#searchresults.accordion
+      %li.accordion-group{ng-repeat: "(category, eventList) in resultCategoryEventMap"}
+        %div.accordion-heading
+          %a.accordion-toggle{class: "{[{colorClass(category)}]}", "data-toggle": "collapse", "data-parent": "#searchresults", href: "#event_type_{[{ $index }]}"}
             {[{ capitalise(category) }]} Events
-        %ul{}
-          %li.event-list{ng-repeat: "event in getEventsForCategory(category)"}
-            {[{ event.name }]}
-            %br
-            %i.icon-eye-open
-            %a.event-list-view{href: "#", ng-click: "popupNode(event)"} View
-            %i.icon-list-alt
-            %a.event-list-relateditems{href: "#", ng-click: "showRelatedItems(event)"} Related Items
+        %div.accordion-body.collapse{id: "event_type_{[{ $index }]}"}
+          %ul.accordion-inner
+            %li.event-list{ng-repeat: "event in getEventsForCategory(category)"}
+              {[{ event.name }]}
+              %br
+              %i.icon-eye-open
+              %a.event-list-view{href: "#", ng-click: "popupNode(event)"} View
+              %i.icon-list-alt
+              %a.event-list-relateditems{href: "#", ng-click: "showRelatedItems(event)"} Related Items

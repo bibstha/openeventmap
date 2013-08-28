@@ -22,7 +22,18 @@ var color = [
 	"darkpurple", 
 	"cadetblue"
 ];
-var colorMap = {};
+var colorMap = {
+	"Accident" : "red",
+	"Exhibition" : "orange",
+	"Educational" : "green",
+	"Social" : "blue",
+	"Traffic" : "purple",
+	"Concert" : "darkred",
+	"Construction" : "darkblue",
+	"Sport" : "darkgreen",
+	"Political" : "darkpurple",
+	"Other" : "cadetblue",
+};
 
 function initialize() {
 	// Check if we have previously stored map coordinates
@@ -424,7 +435,6 @@ function EventSearchCtrl($scope, $http) {
 	$scope.colorClass = function(category) {
 		category = capitaliseFirstLetter(category);
 		return "colorClass" + capitaliseFirstLetter(colorMap[category]);
-		// return "";
 	}
 
 	$scope.capitalise = function(word) {
@@ -432,11 +442,11 @@ function EventSearchCtrl($scope, $http) {
 	}
 
 	$scope.buildColorMap = function(data) {
-		var i = 0;
-		for (var ck in data.categories) {
-			colorMap[data.categories[ck]] = color[i % color.length];
-			i++;
-		}
+		// var i = 0;
+		// for (var ck in data.categories) {
+		// 	colorMap[data.categories[ck]] = color[i % color.length];
+		// 	i++;
+		// }
 	}
 
 	$scope.searchResultDiv = function() {
