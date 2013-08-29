@@ -46,7 +46,7 @@
       %li.accordion-group{ng-repeat: "(category, eventList) in resultCategoryEventMap"}
         %div.accordion-heading
           %a.accordion-toggle{class: "{[{colorClass(category)}]}", "data-toggle": "collapse", "data-parent": "#searchresults", href: "#event_type_{[{ $index }]}"}
-            {[{ capitalise(category) }]} Events
+            ● {[{ capitalise(category) }]} Events
         %div.accordion-body.collapse{id: "event_type_{[{ $index }]}"}
           %ul.accordion-inner
             %li.event-list{ng-repeat: "event in getEventsForCategory(category)"}
