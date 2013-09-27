@@ -15,7 +15,7 @@
             %i.icon-search.icon-white
             Search
       %ul.searchResults
-        %li{ng-repeat: "searchResult in searchResults"}
+        %li{ng-repeat: "searchResult in searchResults | filter:filterByImportance"}
           %a{ng-click: "loadSearchResultInMap(searchResult)"}
             {[{searchResult.display_name}]}
 

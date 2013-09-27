@@ -316,6 +316,16 @@ function initAngularApp() {
 
 function NominatimCtrl($scope, $http) {
 	$scope.searchResults = [];
+
+	/** Filter out results with importance >0.2 from nominatim api **/
+	$scope.filterByImportance = function(data) {
+		if (data.importance > 0.2) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	
 	$scope.searchSuccess = function(data) {
 		$scope.searchResults = data;
