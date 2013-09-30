@@ -213,3 +213,8 @@ ul#searchresults {
 .awesome-marker-icon-cadetblue {
   background-position: -162px 0;
 }
+
+#searchresults .awesome-marker-half {
+  position: inherit;
+  float: left;
+}

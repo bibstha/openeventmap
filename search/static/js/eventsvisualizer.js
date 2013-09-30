@@ -238,6 +238,9 @@ function getNodeCategories(nodes) {
  *  one single event is ['way/node', 'wayid/nodeid']
  */
 function getRelatedItemsInOsmFormat(events) {
+	if (currentRelElems != undefined) {
+		currentRelElems.clearLayers();
+	}
 	var nodeTmplate = "node(%s);out;";
 	var wayTemplate = "(way(%s);>;);out;";
 	var queryStr = "";
@@ -263,9 +266,6 @@ function getRelatedItemsInOsmFormat(events) {
  * For given relatedItems in data, render their structure in the leaflet map
  */
 function renderRelatedItems(data) {
-	if (currentRelElems != undefined) {
-		currentRelElems.clearLayers();
-	}
 	var geojsonMarkerOptions = {
 		radius: 8,
 		fillColor: "#dd3300",
@@ -445,6 +445,11 @@ function EventSearchCtrl($scope, $http) {
 	$scope.colorClass = function(category) {
 		category = capitaliseFirstLetter(category);
 		return "colorClass" + capitaliseFirstLetter(colorMap[category]);
+	}
+
+	$scope.getColor = function(category) {
+		category = capitaliseFirstLetter(category);
+		return colorMap[category];
 	}
 
 	$scope.capitalise = function(word) {
