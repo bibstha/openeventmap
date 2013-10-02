@@ -1,3 +1,9 @@
+/**
+ * Frontend javascript for openeventmap application.
+
+ * @author Bibek Shrestha <bibek.shrestha@tum.de>
+ */
+
 // By default always Munich map
 var map;
 var currentMarkers; // MapLayer to store markers
@@ -68,6 +74,12 @@ function initialize() {
 	
 }
 
+/**
+ * Loads the markers into the map
+ *
+ * If the marker layer already has existing markers, 
+ * it appends the new markers on top
+ */
 function renderMarkers(data)
 {
 	var nodes = {};
@@ -125,6 +137,14 @@ function renderMarkers(data)
 	}
 }
 
+/**
+ * Get a list of Categories give the set of events
+ * 
+ * Also adds "Others" if category found empty.
+ *
+ * @param events List of events
+ * @return List of categories
+ */
 function getEventCategories(events) {
 	var categories = [];
 	for (var key in events) {
@@ -137,6 +157,15 @@ function getEventCategories(events) {
 	return categories;
 }
 
+/**
+ * Renders the PopUp for each Marker.
+ *
+ * A marker (and thus its popup) can contain more than one events.
+ * All events are rendered in the popup.
+ *
+ * @param events The array of events associated with given popup
+ * @return String, sub html contents to be displayed
+ */
 function renderEventPopup(events) {
 	var length = events.length;
 	var tagPopUpWrapper = "";
@@ -180,6 +209,13 @@ function renderEventPopup(events) {
 	return "<div class='popup-container'>" + tagPopUpWrapper + "</div>";
 }
 
+/**
+ * Trims longer URL higher than 40 characters to 40 characters and appends a ...
+ * at the end
+ *
+ * @param url Url string to be trimmed
+ @ @return Trimmed url
+ */
 function trimUrl(url) {
 	if (url != undefined && url.length > 40) {
 		return url.substr(0,40) + "...";
@@ -189,13 +225,25 @@ function trimUrl(url) {
 	}
 }
 
+/**
+ * Capitalize first letter of given string
+ * If "cats are funny" is passed, "Cats are funny" is returned.
+ *
+ * @param string the string to be capitalized
+ * @return Capitalized string
+ */
 function capitaliseFirstLetter(string)
 {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 /**
- * Returns categories
+ * For given List of nodes, it categorises all events inside into a given set of
+ * categories.
+ * 
+ * @param nodes The nodes with events inside
+ * @return Object with categories as keys and array of event objects as value
+ * {'social':[eventObj1, eventObj2], 'sport':[eventObj3, eventObj4], ...}
  */
 function getNodeCategories(nodes) {
 	var length = nodes.length;
@@ -299,6 +347,9 @@ function updateDivHeight() {
 	searchResultContainer.height($('body').height() - searchResultContainer.offset().top);
 }
 
+/**
+ * Initializer for Angular App
+ */
 function initAngularApp() {
 	$("#nominatim-div .btn-open").click(function() {
 		$("#nominatim-div").removeClass("closed");
@@ -314,6 +365,9 @@ function initAngularApp() {
 	});
 }
 
+/**
+ * Angular controller for Nominatim Form that powers "Place Search"
+ */
 function NominatimCtrl($scope, $http) {
 	$scope.searchResults = [];
 
@@ -330,7 +384,10 @@ function NominatimCtrl($scope, $http) {
 	$scope.searchSuccess = function(data) {
 		$scope.searchResults = data;
 	}
-
+  
+  /**
+   * Main search function that queries nominatim api
+   */
 	$scope.search = function() {
 		if ($scope.query != undefined) {
 			var url = "http://nominatim.openstreetmap.org/search";
@@ -347,6 +404,11 @@ function NominatimCtrl($scope, $http) {
 		}
 	}
 
+  /**
+   * Handler to zoom into Nominatim Search results.
+   *
+   * When given result is clicked, map is zoomed into
+   */
 	$scope.loadSearchResultInMap = function(resultObj) {
 		if (undefined == resultObj) return;
 		map.fitBounds([
@@ -356,17 +418,26 @@ function NominatimCtrl($scope, $http) {
 	}
 }
 
+/**
+ * Angular Controller for Events Search
+ */
 function EventSearchCtrl($scope, $http) {
 	$scope.resultCategoryEventMap = {};
 	$scope.map_center = {};
 	$scope.firstSearchFired = false;
 
+  /**
+   * Refetch Node results when map is moved
+   */
 	$scope.initialize = function() {
 		map.on('moveend', function() {
 			$scope.$apply($scope.fetchNodeResults);
 		});
 	}
 
+  /**
+   * Clear all markers from the Map
+   */
 	$scope.clearMarkers = function() {
 		if (currentMarkers != undefined) {
 			currentMarkers.clearLayers();
@@ -375,6 +446,12 @@ function EventSearchCtrl($scope, $http) {
 		currentMapNodes = undefined;
 	}
 
+  /**
+   * Main search function.
+   *
+   * Clears the search results
+   * Loads results according to the given parameters
+   */
 	$scope.search = function() {
 		$scope.firstSearchFired = true;
 		$scope.clearMarkers();
@@ -414,6 +491,12 @@ function EventSearchCtrl($scope, $http) {
 		.success($scope.updateResults);
 	}
 
+	/**
+	 * Given the results from search, parses the categories and saves
+	 * the result into $scope.resultCategoryEventMap
+	 *
+	 * The frontend is bounded with this variable and updates automatically
+	 */
 	$scope.updateResults = function(data) {
 		$scope.searchResults = data;
 		$scope.resultCategoryEventMap = {};
@@ -425,10 +508,20 @@ function EventSearchCtrl($scope, $http) {
 		}
 	}
 
+	/**
+	 * For given category, return all events
+	 *
+	 * @param category The given category like 'social', 'sport', ...
+	 * @return Array of events [eventObj1, eventObj2, ...]
+	 */
 	$scope.getEventsForCategory = function(category) {
 		return $scope.resultCategoryEventMap[category];
 	}
 
+	/**
+	 * Popup marker for given event
+	 * @param event The event to to popup
+	 */
 	$scope.popupNode = function(event) {
 		if (event.id && eventMarkerHashMap[event.id]) {
 			var marker = eventMarkerHashMap[event.id];
@@ -436,22 +529,37 @@ function EventSearchCtrl($scope, $http) {
 		}
 	}
 
+	/**
+	 * Handler for showing related Items
+	 * @param event The event to show related items for
+	 */
 	$scope.showRelatedItems = function(event) {
 		if (event.id && eventMarkerHashMap[event.id]) {
 			getRelatedItemsInOsmFormat([eventMarkerHashMap[event.id].current_node.events[event.id]]);
 		}
 	}
 
+	/**
+	 * Helper function to return color class according to given category
+	 *
+	 * It maps category to colorMap and returns a string representing color class
+	 */
 	$scope.colorClass = function(category) {
 		category = capitaliseFirstLetter(category);
 		return "colorClass" + capitaliseFirstLetter(colorMap[category]);
 	}
 
+	/**
+	 * Helper function to simply return color matching given category
+	 */
 	$scope.getColor = function(category) {
 		category = capitaliseFirstLetter(category);
 		return colorMap[category];
 	}
 
+	/**
+	 * Helper function to capitalize given string
+	 */
 	$scope.capitalise = function(word) {
 		return capitaliseFirstLetter(word);
 	}
@@ -464,6 +572,12 @@ function EventSearchCtrl($scope, $http) {
 		// }
 	}
 
+	/**
+	 * Checks whether SearchResults Div should be hidden based on availability
+	 * of search results
+	 *
+	 * @return string 'hide' if no results and '' in case there is some result
+	 */
 	$scope.searchResultDiv = function() {
 		if (jQuery.isEmptyObject($scope.resultCategoryEventMap))
 			return "hide";
@@ -472,6 +586,9 @@ function EventSearchCtrl($scope, $http) {
 	}
 }
 
+/**
+ * Main functo to act as a container
+ */
 function main() {
 	updateDivHeight();
 	var resizeTimer;

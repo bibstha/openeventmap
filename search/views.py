@@ -15,18 +15,39 @@ import logging
 logger = logging.getLogger(__name__)
 
 def index(request):
+	"""
+	GET /
+	Renders the base homepage consisiting of search forms and map.
+	Only renders the structure and most of the dynamic portions are handled by
+	javascript/angular through eventsvisualizer.js
+	"""
 	parameters = {}
 	return render_to_response('index.haml', parameters, context_instance=RequestContext(request))
 
 def about_us(request):
+	"""
+	GET /about-us
+	Displays the AboutUs Page
+	"""
 	parameters = {}
 	return render_to_response('about-us.haml', parameters, context_instance=RequestContext(request))
 
 def contact_us(request):
+	"""
+	GET /contact-us
+	Displays the ContactUs Page
+	"""
 	parameters = {}
 	return render_to_response('contact-us.haml', parameters, context_instance=RequestContext(request))
 
 def searchapi(request):
+	"""
+	GET /searchapi
+	Handler for Search requests. Possible parameters are
+	e,w,n,s with respective latitude and longitude values
+	name : the name of the event, it does a partial text match
+	category : category text to match inside primary and secondary category fields
+	"""
 	requiredParams = ["e","w","n","s"]
 	optionalParams = ["name", "category"]
 	
@@ -106,6 +127,10 @@ def searchapi(request):
 	return HttpResponse(json.dumps({'elements':eventsOutput, 'categories':eventCategories}), content_type="application/json")
 
 def feedback_post(request):
+	"""
+	POST /feedback/post
+	Saves the data through feedback into database
+	"""
 	if request.POST.get("message"):
 		feedback = Feedback()
 		feedback.message = request.POST.get("message")
@@ -116,10 +141,20 @@ def feedback_post(request):
 	
 
 def feedbacks_list(request):
+	"""
+	GET /feedbacks/list
+	Displays all feedbacks
+	"""
 	feedbacks = Feedback.objects.all()
 	return render_to_response('feedbacks_list.haml', {'feedbacks' : feedbacks}, context_instance=RequestContext(request))
 
 def getRule(datetime, howoften):
+	"""
+	helper function
+	
+	Returns respective rrule formula for given string
+	rrule is explained in more detail here http://labix.org/python-dateutil
+	"""
 	howoften = howoften.lower()
 	if howoften == "yearly":
 		return rrule(YEARLY, dtstart=datetime)
@@ -137,32 +172,38 @@ def getRule(datetime, howoften):
 		return False
 
 def filterDates(events, startdate, enddate):
-		result = []
-		for event in events:
-			if not event.startdate:
+	"""
+	helper function
+
+	Filters out events which belong in between startdate and EndDate
+	Users rrule from getRule to calculate date opening and closing limits
+	"""
+	result = []
+	for event in events:
+		if not event.startdate:
+			continue
+
+		eStartDate = event.startdate
+		eEndDate = event.enddate or eStartDate
+
+		print eStartDate, eEndDate, event.howoften
+
+		if not event.howoften or not getRule(eStartDate, event.howoften):
+			if startdate.date() <= eStartDate and eEndDate <= enddate.date():
+				result.append(event)
+				print "Inside"
+			else:
+				continue
+		else:
+			r = getRule(eStartDate, event.howoften)
+			l = r.between(startdate, enddate)
+			if l:
+				print "L", l
+				result.append(event)
+			else:
 				continue
 
-			eStartDate = event.startdate
-			eEndDate = event.enddate or eStartDate
-
-			print eStartDate, eEndDate, event.howoften
-
-			if not event.howoften or not getRule(eStartDate, event.howoften):
-				if startdate.date() <= eStartDate and eEndDate <= enddate.date():
-					result.append(event)
-					print "Inside"
-				else:
-					continue
-			else:
-				r = getRule(eStartDate, event.howoften)
-				l = r.between(startdate, enddate)
-				if l:
-					print "L", l
-					result.append(event)
-				else:
-					continue
-
-		return result
+	return result
 
 # def _sortEvents(events, date=datetime.now()):
 # 	q = sorted(events, key=lambda event:_getDateDiff(event.startdate))

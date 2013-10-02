@@ -1,3 +1,6 @@
+"""
+Handler for apache passenger module
+"""
 import sys, os
 cwd = os.getcwd()
 sys.path.append(cwd)

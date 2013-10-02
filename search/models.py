@@ -4,6 +4,9 @@ from compositekey import db
 import re
 
 class Event(models.Model):
+	"""
+	Event Model stores data for one event.
+	"""
 	# either way or node
 	event_type = models.CharField(max_length=4,db_index=True)
 	type_id = models.BigIntegerField(db_index=True)
@@ -25,16 +28,27 @@ class Event(models.Model):
 
 
 class NodeTag(models.Model):
+	"""
+	NodeTag represents a single row from current_node_tags 
+	table. It consists of (nodeid, key, value)
+	"""
 	id = db.MultiFieldPK("node_id", "k")
 	node_id = models.BigIntegerField()
 	k = models.CharField(max_length=255)
 	v = models.CharField(max_length=255)
 
 	class Meta:
+		"""
+		We do not manage it but point it to OSM's table
+		"""
 		db_table = "current_node_tags"
 		managed = False
 
 	def parseEventKey(self):
+		"""
+		Returns a tuple of EventNumber and EventKey
+		Eg: (0, "name") or (1, "startdate")
+		"""
 		parsed = re.search("event:([0-9]+):(.+)", self.k)
 		if parsed:
 			return (int(parsed.group(1)), parsed.group(2))
@@ -43,6 +57,10 @@ class NodeTag(models.Model):
 		
 
 class WayTag(models.Model):
+	"""
+	Similar to NodeTag, represents a single row from
+	current_way_tags and has values as (wayid, key, value)
+	"""
 	id = db.MultiFieldPK("way_id", "k")
 	way_id = models.BigIntegerField()
 	k = models.CharField(max_length=255)
@@ -60,6 +78,12 @@ class WayTag(models.Model):
 			return (None, None)
 
 class Node(models.Model):
+	"""
+	Represents a row from current_nodes.
+	Encapsulates nodeid, latitude and longitude.
+
+	It points to existing OSM's table.
+	"""
 	id = models.BigIntegerField(primary_key=True)
 	latitude = models.IntegerField()
 	longitude = models.IntegerField()
@@ -69,6 +93,12 @@ class Node(models.Model):
 		managed = False
 
 class Way(models.Model):
+	"""
+	Represents a row from current_ways.
+	Encapsulates nodeid, latitude and longitude.
+
+	It points to existing OSM's table
+	"""
 	id = models.BigIntegerField(primary_key=True)
 	latitude = models.IntegerField()
 	longitude = models.IntegerField()
@@ -78,5 +108,8 @@ class Way(models.Model):
 		managed = False
 
 class Feedback(models.Model):
+	"""
+	Model for CRUD for feedbacks from the user
+	"""
 	message = models.TextField()
 	created_at = models.DateTimeField(auto_now_add = True)

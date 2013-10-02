@@ -5,10 +5,10 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-	url(r'^$', 'search.views.index'),
-	url(r'^about-us$', 'search.views.about_us'),
-	url(r'^contact-us$', 'search.views.contact_us'),
-	url(r'^searchapi/$', 'search.views.searchapi'),
+    url(r'^$', 'search.views.index'),
+    url(r'^about-us$', 'search.views.about_us'),
+    url(r'^contact-us$', 'search.views.contact_us'),
+    url(r'^searchapi/$', 'search.views.searchapi'),
     url(r'^feedback/post$', 'search.views.feedback_post'),
     url(r'^feedbacks/list$', 'search.views.feedbacks_list'),
     # Examples:
