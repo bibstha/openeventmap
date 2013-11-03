@@ -38,11 +38,11 @@
         %i.icon-search.icon-white
         Search
       %input.btn{type: "reset", value: "Reset"} 
-    %p{class: "{[{ searchResultDiv() }]}" }
+    %p{class: "{[{ searchResultDiv() }]}", "ng-cloak": True}
       %strong Search Results
       %a{href: "http://osm.openeventmap.tum.de/export?lat={[{map_center.lat}]}&lon={[{map_center.lng}]}&zoom={[{map_center.zoom}]}", target: '_blank' }
         Export
-    %ul#searchresults.accordion
+    %ul#searchresults.accordion{"ng-cloak": True}
       %li.accordion-group{ng-repeat: "(category, eventList) in resultCategoryEventMap"}
         %div.accordion-heading
           %a.accordion-toggle{class: "{[{colorClass(category)}]}", "data-toggle": "collapse", "data-parent": "#searchresults", href: "#event_type_{[{ $index }]}"}
