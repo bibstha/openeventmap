@@ -373,7 +373,7 @@ function NominatimCtrl($scope, $http) {
 
 	/** Filter out results with importance >0.2 from nominatim api **/
 	$scope.filterByImportance = function(data) {
-		if (data.importance > 0.2) {
+		if (data.importance >= 0.2) {
 			return true;
 		}
 		else {
@@ -415,6 +415,12 @@ function NominatimCtrl($scope, $http) {
 			[resultObj.boundingbox[0], resultObj.boundingbox[2]],
 			[resultObj.boundingbox[1], resultObj.boundingbox[3]]
 		]);
+		if (currentMarkers != undefined) {
+			currentMarkers.clearLayers();
+			currentMarkers = undefined;
+		}
+		var marker = L.marker([resultObj.lat, resultObj.lon]);
+		currentMarkers = L.layerGroup([marker]).addTo(map);
 	}
 }
 
