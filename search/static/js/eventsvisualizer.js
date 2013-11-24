@@ -114,12 +114,13 @@ function renderMarkers(data) {
   for (key in nodes) {
     var node = nodes[key];
     // console.log(node);
-    var eventPopup = renderEventPopup(node.events);
-    var eventCategories = getEventCategories(node.events);
+    var sortedKeys = sortEventsKeys(node.events);
+    var eventPopup = renderEventPopup(node.events, sortedKeys);
+    var eventCategories = getEventCategories(node.events, sortedKeys);
     // console.log(eventCategories.length);
     // console.log(eventCategories);
     
-    if (eventCategories.length == 1) {
+    if (eventCategories.length > 0) {
       var coloredMarker = L.AwesomeMarkers.icon({
         icon: undefined,
         color: colorMap[eventCategories[0]],
@@ -128,9 +129,6 @@ function renderMarkers(data) {
         iconAnchor:   [9, 21]
       });
       var marker = L.marker([node.lat, node.lng], {icon: coloredMarker}).bindPopup(eventPopup);
-    }
-    else {
-      var marker = L.marker([node.lat, node.lng]).bindPopup(eventPopup);
     }
     marker.current_node = node;
     markers.push(marker);
@@ -157,16 +155,36 @@ function renderMarkers(data) {
  * @param events List of events
  * @return List of categories
  */
-function getEventCategories(events) {
-  var categories = [];
-  for (var key in events) {
-    var category = events[key].category;
+function getEventCategories(events, sortedKeys) {
+  var categories = [], i, item;
+  for (i=0; item = sortedKeys[i]; i++) {
+    var category = events[item[0]].category;
     if (category == "") { category = "Other"}
     if (categories.indexOf(category) == -1) {
       categories.push(category);
     }
   }
   return categories;
+}
+
+function sortEventsKeys(events) {
+  var key, sd;
+  var currentDate = new Date();
+  var sortedKeys = [];
+  for (key in events) {
+    if (events[key].startdate) {
+      sd = events[key].startdate.split("/");
+      sd = Math.abs( currentDate - new Date( [sd[1], sd[0], currentDate.getFullYear()].join("/") ) ); 
+    }
+    else {
+      sd = 365000000;
+    }
+    sortedKeys.push( [key, sd] );
+  }
+  sortedKeys = sortedKeys.sort(function(a, b) {
+    return a[1] - b[1];
+  });
+  return sortedKeys;
 }
 
 /**
@@ -178,24 +196,11 @@ function getEventCategories(events) {
  * @param events The array of events associated with given popup
  * @return String, sub html contents to be displayed
  */
-function renderEventPopup(events) {
+function renderEventPopup(events, sortedKeys) {
   var length = events.length;
   var tagPopUpWrapper = "";
-  var sortedKeys = [];
-  var currentDate = new Date();
-  for (var key in events) {
-    if (events[key].startdate) {
-      var sd = events[key].startdate.split("/");
-      sd = Math.abs( currentDate - new Date( [sd[1], sd[0], currentDate.getFullYear()].join("/") ) ); 
-    }
-    else {
-      sd = 365000000;
-    }
-    sortedKeys.push( [key, sd] );
-  }
-  sortedKeys = sortedKeys.sort(function(a, b) {
-    return a[1] - b[1];
-  });
+  
+  
   for (var k in sortedKeys) {
     var key = sortedKeys[k][0];
     event = events[key];
