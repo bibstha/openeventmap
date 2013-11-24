@@ -32,6 +32,15 @@ html, body {
 	/*white-space: nowrap;*/
 }
 
+.popup-container-many-categories {
+  margin-left: -5px;
+}
+
+.popup-container-many-categories .event-wrapper {
+  position: relative;
+  padding-left: 20px;
+}
+
 .node-category {
 
 }

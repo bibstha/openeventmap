@@ -115,11 +115,8 @@ function renderMarkers(data) {
     var node = nodes[key];
     // console.log(node);
     var sortedKeys = sortEventsKeys(node.events);
-    var eventPopup = renderEventPopup(node.events, sortedKeys);
     var eventCategories = getEventCategories(node.events, sortedKeys);
-    // console.log(eventCategories.length);
-    // console.log(eventCategories);
-    
+    var eventPopup = renderEventPopup(node.events, sortedKeys, eventCategories);
     if (eventCategories.length > 0) {
       var coloredMarker = L.AwesomeMarkers.icon({
         icon: undefined,
@@ -196,10 +193,10 @@ function sortEventsKeys(events) {
  * @param events The array of events associated with given popup
  * @return String, sub html contents to be displayed
  */
-function renderEventPopup(events, sortedKeys) {
+function renderEventPopup(events, sortedKeys, categories) {
   var length = events.length;
-  var tagPopUpWrapper = "";
-  
+  var tagPopupArray = [];
+  var hasManyCategories = (categories.length > 1)
   
   for (var k in sortedKeys) {
     var key = sortedKeys[k][0];
@@ -207,7 +204,12 @@ function renderEventPopup(events, sortedKeys) {
     var tagPopupValue = "";
     // for (var i=0; i<length; i++) {
     var eventName = event.name;
-    tagPopupValue += (eventName)?sprintf("<b>%s</b><br/>", eventName):"";
+    if (hasManyCategories) {
+      var spanTemplate = sprintf('<span class="awesome-marker-icon-%s awesome-marker-half"></span>', colorMap[event.category]);
+      tagPopupValue += (eventName)?sprintf(spanTemplate + "<b>%s</b><br/>", eventName):"";
+    } else {
+      tagPopupValue += (eventName)?sprintf("<b>%s</b><br/>", eventName):"";
+    }
     var eventCat = event.category;
     var eventSubCat = event.subcategory;
     tagPopupValue += (eventCat && eventSubCat)?sprintf("Category: %s > %s<br/>", eventCat, eventSubCat):"";
@@ -221,9 +223,14 @@ function renderEventPopup(events, sortedKeys) {
     tagPopupValue += (eventNumParticipants)?sprintf("Number of Participants: %s<br/>", eventNumParticipants):"";
     var eventHowOften = event.howoften;
     tagPopupValue += (eventHowOften)?sprintf("How often: %s<br/>", eventHowOften):"";
-    tagPopUpWrapper += tagPopupValue + "<br/>";
+    tagPopupArray.push("<div class='event-wrapper'>" + tagPopupValue + "</div>");
   }
-  return "<div class='popup-container'>" + tagPopUpWrapper + "</div>";
+
+  if (hasManyCategories) {
+    return "<div class='popup-container popup-container-many-categories'>" + tagPopupArray.join("</br>") + "</div>";
+  } else {
+    return "<div class='popup-container'>" + tagPopupArray.join("</br>") + "</div>";
+  }
 }
 
 /**
